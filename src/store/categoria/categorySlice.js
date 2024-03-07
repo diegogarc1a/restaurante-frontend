@@ -4,7 +4,8 @@ export const categorySlice = createSlice({
     initialState: {
         isLoadingCategories: true,
         categories : [],
-        activeCategory : null
+        activeCategory : null,
+        isCategoryModalOpen : false,
     },
     reducers: {
         onSetActiveCategory: (state, { payload }) =>{
@@ -21,9 +22,11 @@ export const categorySlice = createSlice({
                 }
                 return cat;
             } )
+            state.activeCategory = null;
         },
-        onDeleteCategory: (state) => {
-            state.categories = state.categories.filter( cat => cat.id !== state.activeCategory.id);
+        onDeleteCategory: (state, { payload }) => {
+            // state.categories = state.categories.filter( cat => cat.id !== state.activeCategory.id);
+            state.categories = state.categories.filter( cat => cat.id !== payload.id);
             state.activeCategory = null;
         },
         onLoadCategories: (state, { payload = [] }) => {
@@ -39,6 +42,13 @@ export const categorySlice = createSlice({
             state.categories= [],
             state.activeCategory= null
         }
+        ,onOpenCategoryModal: ( state ) => {
+            state.isCategoryModalOpen = true;
+        },
+        onCloseCategoryModal: ( state ) => {
+            state.isCategoryModalOpen = false;
+            state.activeCategory = null;
+        }
     }
 });
 
@@ -49,5 +59,7 @@ export const {
     onUpdateCategory, 
     onDeleteCategory, 
     onLoadCategories,
-    onLogoutCategory 
+    onLogoutCategory,
+    onOpenCategoryModal,
+    onCloseCategoryModal
 } = categorySlice.actions;
