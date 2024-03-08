@@ -6,11 +6,12 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import Swal from "sweetalert2";
 import { Image } from "primereact/image";
+import { DialogProduct } from "./DialogProduct";
 
 
 export const TableProducts = () => {
 
-    const { products } = useProductStore();
+    const { products, startDeletingProduct, setActiveProduct, openProductModal } = useProductStore();
 
     const header = (
         <div className="flex flex-wrap align-items-center justify-content-center">
@@ -40,12 +41,12 @@ export const TableProducts = () => {
         );
       };
     
-      const onEditCategory = (category) => () =>  {
+      const onEditCategory = (product) => () =>  {
         // setActiveCategory(category)
         // openCategoryModal();
     };
     
-    const onDeleteCategory = (category) => () =>  {
+    const onDeleteCategory = (product) => () =>  {
       Swal.fire({
         title: "Estas seguro?",
         text: "No puedes revertir este cambio",
@@ -57,24 +58,24 @@ export const TableProducts = () => {
         cancelButtonText: "Cancelar"
       }).then((result) => {
         if (result.isConfirmed) {
-        //   startDeletingCategory(category);
+          startDeletingProduct( product )
         }
       });
       
     }
     
-      const actionBodyTemplate = (category) => {
+      const actionBodyTemplate = (product) => {
         return (
             <Fragment>
-                <Button icon="pi pi-pencil" rounded outlined className="mr-2" onClick={onEditCategory(category)} />
-                <Button icon="pi pi-trash" rounded outlined severity="danger" onClick={onDeleteCategory(category)}/>
+                <Button icon="pi pi-pencil" rounded outlined className="mr-2" onClick={onEditCategory(product)} />
+                <Button icon="pi pi-trash" rounded outlined severity="danger" onClick={onDeleteCategory(product)}/>
             </Fragment>
         );
     };
 
     const imageBodyTemplate = (rowData) => {
         return <Image imageClassName="shadow-2 border-round" 
-                src={`${import.meta.env.VITE_API_URL}${rowData.foto}`} 
+                src={`${import.meta.env.VITE_API_URL}recursos/${rowData.foto}`} 
                 alt={rowData.descripcion} width="200" 
                 preview
                 /> 
@@ -119,7 +120,7 @@ export const TableProducts = () => {
                 <Column body={actionBodyTemplate} align={"center"} exportable={false} ></Column>
               </DataTable>
             </div>
-              {/* <DialogCategories/> */}
+              <DialogProduct/>
           </div>
      
       );

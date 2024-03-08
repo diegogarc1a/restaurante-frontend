@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useProductStore } from "../../../hooks";
-import { TableProducts } from "../components/TableProducts";
+import { TableProducts } from "../components/TableProduct";
+import { ToolbarProduct } from "../components/ToolbarProduct";
 
 
 export const ProductoPage = () => {
@@ -14,6 +15,7 @@ export const ProductoPage = () => {
 
   return (
     <div className="card">
+      <ToolbarProduct/>
       <TableProducts/>
     </div>
   )

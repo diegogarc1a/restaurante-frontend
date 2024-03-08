@@ -1,1 +1,1 @@
-export * from './components/TableProducts'
+export * from './components/TableProduct'

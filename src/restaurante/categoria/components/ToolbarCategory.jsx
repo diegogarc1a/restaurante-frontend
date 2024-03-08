@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { Toolbar } from "primereact/toolbar";
 import { useCategoryStore } from "../../../hooks";
 
-export const ToolbarCategories = () => {
+export const ToolbarCategory = () => {
 
   const { isCategoryModalOpen, openCategoryModal  } = useCategoryStore();
 

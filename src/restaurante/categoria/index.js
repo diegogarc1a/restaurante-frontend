@@ -1,4 +1,4 @@
-export * from './components/DialogCategories'
-export * from './components/ToolbarCategories'
-export * from './components/TableCategories'
+export * from './components/DialogCategory'
+export * from './components/ToolbarCategory'
+export * from './components/TableCategory'
 export * from './pages/CategoriaPage'

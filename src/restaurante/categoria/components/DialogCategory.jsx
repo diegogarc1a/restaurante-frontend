@@ -10,12 +10,9 @@ const category = {
   estado: true
 };
 
-export const DialogCategories = () => {
+export const DialogCategory = () => {
 
-  const { isCategoryModalOpen, closeCategoryModal  } = useCategoryStore();
-
-  
-  const { activeCategory, startSavingCategory } = useCategoryStore();
+  const { isCategoryModalOpen, closeCategoryModal, activeCategory, startSavingCategory  } = useCategoryStore();
   
   const [formSubmitted, setFormSubmitted] = useState(false);
 
@@ -52,7 +49,7 @@ export const DialogCategories = () => {
   }
 
 
-  const productDialogFooter = (
+  const categoryDialogFooter = (
     <Fragment>
       <Button label="Cancelar" outlined icon="pi pi-times" onClick={onCloseDialog} />
       <Button label="Guardar" icon="pi pi-check" onClick={onSubmit}/>
@@ -62,7 +59,7 @@ export const DialogCategories = () => {
  
   return (
 
-            <Dialog header="Agregar Categoria" visible={isCategoryModalOpen} onHide={onCloseDialog} draggable={false} footer={productDialogFooter}
+            <Dialog header="Agregar Categoria" visible={isCategoryModalOpen} onHide={onCloseDialog} draggable={false} footer={categoryDialogFooter}
                 style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid"
             >
                  <div className="field">

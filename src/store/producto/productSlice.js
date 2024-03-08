@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export const productSlice = createSlice({
     name: 'product',
     initialState: {
-        isLoadingProduct: true,
+        isLoadingProducts: true,
         products : [],
         activeProduct : null,
         isProductModalOpen : false,

@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useCategoryStore } from "../../../hooks"
-import { TableCategories, ToolbarCategories } from "../";
+import { TableCategory, ToolbarCategory } from "../";
 
 
 export const CategoriaPage = () => {
 
-  const { categories, startLoadingCategories, setActiveCategory  } = useCategoryStore();
+  const { startLoadingCategories } = useCategoryStore();
 
   useEffect(() => {
     startLoadingCategories();
@@ -16,9 +16,8 @@ export const CategoriaPage = () => {
   return (
     <>
     <div className="card">
-      <ToolbarCategories/>
-      <TableCategories categories={categories} setActiveCategory={setActiveCategory} />
-
+      <ToolbarCategory/>
+      <TableCategory/>
     </div>
     </>
     

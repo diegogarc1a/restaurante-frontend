@@ -3,14 +3,14 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Tag } from "primereact/tag";
 import { Fragment } from "react";
-import { DialogCategories } from "./DialogCategories";
+import { DialogCategory } from "./DialogCategory";
 import { useCategoryStore } from "../../../hooks";
 import Swal from "sweetalert2";
 
-export const TableCategories = ({ categories, setActiveCategory }) => {
+export const TableCategory = () => {
 
 
-  const { isCategoryModalOpen, openCategoryModal, startDeletingCategory  } = useCategoryStore();
+  const { categories, setActiveCategory, openCategoryModal, startDeletingCategory  } = useCategoryStore();
 
 
   
@@ -97,7 +97,7 @@ const onDeleteCategory = (category) => () =>  {
             <Column body={actionBodyTemplate} align={"center"} exportable={false} ></Column>
           </DataTable>
         </div>
-          <DialogCategories/>
+          <DialogCategory/>
       </div>
  
   );
