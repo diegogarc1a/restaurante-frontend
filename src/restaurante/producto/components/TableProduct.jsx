@@ -42,8 +42,8 @@ export const TableProducts = () => {
       };
     
       const onEditCategory = (product) => () =>  {
-        // setActiveCategory(category)
-        // openCategoryModal();
+        setActiveProduct(product);
+        openProductModal();
     };
     
     const onDeleteCategory = (product) => () =>  {

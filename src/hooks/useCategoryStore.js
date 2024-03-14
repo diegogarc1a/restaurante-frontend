@@ -8,6 +8,9 @@ export const useCategoryStore = () => {
     const dispatch = useDispatch();
     const { categories, activeCategory, isLoadingCategories, isCategoryModalOpen } = useSelector( state => state.category );
 
+
+
+
     const startSavingCategory = async( category ) => {
         try {
 
@@ -25,7 +28,6 @@ export const useCategoryStore = () => {
           
         } catch (error) {
           console.log(error);
-          Swal.fire('Error al guardar', "Ha ocurrido un error", 'error');
         }
     }
 
@@ -37,7 +39,6 @@ export const useCategoryStore = () => {
             dispatch( onLoadCategories(data) );
 
         } catch (error) {
-            console.log("Error cargando categorias");
             console.log(error);
         }
     }
@@ -50,7 +51,6 @@ export const useCategoryStore = () => {
           Swal.fire('Exito',"Categoria Eliminada", "success");
         } catch (error) {
             console.log(error);
-            Swal.fire('Error al eliminar', "Ha ocurrido un error", 'error');
         }
       
   }

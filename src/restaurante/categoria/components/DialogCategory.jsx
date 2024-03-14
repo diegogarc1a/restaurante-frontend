@@ -67,14 +67,14 @@ export const DialogCategory = () => {
               >
                    <div className="field">
                       <label htmlFor="nombre" className={classNames('font-bold', { 'p-error': isFormFieldValid('nombre') })}>
-                          Nombre
+                          Nombre*
                       </label>
                       <InputText id="nombre" name="nombre" value={formik.values.nombre} onChange={formik.handleChange} autoFocus className={classNames({ 'p-invalid': isFormFieldValid('nombre') })} />
                       {getFormErrorMessage('nombre')}
                   </div>
                   <div className="field">
                       <label htmlFor="descripcion" className={classNames('font-bold', { 'p-error': isFormFieldValid('descripcion') })}>
-                          Descripción
+                          Descripción*
                       </label>
                       <InputText id="descripcion" name="descripcion" value={formik.values.descripcion} onChange={formik.handleChange} className={classNames({ 'p-invalid': isFormFieldValid('descripcion') })} />
                       {getFormErrorMessage('descripcion')}

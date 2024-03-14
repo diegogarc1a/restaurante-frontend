@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { restauranteApi } from "../api";
-import { onAddNewProduct, onCloseProductModal, onDeleteProduct, onLoadProducts, onOpenProductModal, onSetActiveProduct } from "../store/producto/productSlice";
+import { onAddNewProduct, onCloseProductModal, onDeleteProduct, onLoadProducts, onOpenProductModal, onSetActiveProduct, onUpdateProduct } from "../store/producto/productSlice";
 import Swal from "sweetalert2";
 
 
@@ -9,27 +9,29 @@ export const useProductStore = () => {
     const dispatch = useDispatch();
     const { products, isLoadingProduct, activeProduct, isProductModalOpen } = useSelector( state => state.product);
   
-
-    const startSavingProduct = async(product) => {
+    const configHeader = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data'
+          }
+    }
+    const startSavingProduct = async( product ) => {
         try {
-            if( product.id ){
-                //Actualizando
+            if( activeProduct !== null ){
+                // Actualizando
+                const { data } = await restauranteApi.put("productos/", product, configHeader);
+                dispatch( onUpdateProduct({...data }) )
+                Swal.fire('Exito',"Producto Modificado", "success");
                 return;
             }
                 //Guardando
-                const { data } = await restauranteApi.post("productos/", product,{
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'multipart/form-data'
-                      }
-                });
+                const { data } = await restauranteApi.post("productos/", product, configHeader);
                 
                 dispatch( onAddNewProduct({  ...data , id: data.id }) );
                 Swal.fire('Exito',"Producto Guardado", "success");
         
         } catch (error) {
             console.log(error);
-            Swal.fire('Error al guardar', "Ha ocurrido un error", 'error');
         }
     }
 
@@ -37,10 +39,9 @@ export const useProductStore = () => {
         try {   
             await restauranteApi.delete(`productos/${product.id}`);
             dispatch( onDeleteProduct( product ) );
-            Swal.fire('Exito',"Categoria Eliminada", "success");
+            Swal.fire('Exito',"Procto Eliminado", "success");
         } catch (error) {
             console.log(error);
-            Swal.fire('Error al eliminar', "Ha ocurrido un error", 'error');
         }
     }
 

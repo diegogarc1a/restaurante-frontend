@@ -2,10 +2,11 @@ import { Avatar } from "primereact/avatar";
 import { Badge } from "primereact/badge";
 import { InputText } from "primereact/inputtext";
 import { Menubar } from "primereact/menubar";
+import React from "react";
 
 export const Navbar = () => {
   const itemRenderer = (item) => (
-    <a  className="flex align-items-center p-menuitem-link">
+    <a className="flex align-items-center p-menuitem-link">
         <span className={item.icon} />
         <span className="mx-2">{item.label}</span>
         {item.badge && <Badge className="ml-auto" value={item.badge} />}
@@ -83,7 +84,7 @@ const end = (
 );
 
 return (
-        <Menubar model={items} start={start} end={end} />   
+        <Menubar model={items} start={start} end={end}/>
 )
 }
      

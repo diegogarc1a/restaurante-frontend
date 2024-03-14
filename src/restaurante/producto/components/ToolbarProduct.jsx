@@ -14,7 +14,7 @@ export const ToolbarProduct = () => {
       const leftToolbarTemplate = () => {
           return (
               <div className="flex flex-wrap gap-2">
-                  <Button label="New" icon="pi pi-plus" severity="success" onClick={onClickNew} />
+                  <Button label="Nuevo" icon="pi pi-plus" severity="success" onClick={onClickNew} />
               </div>
           );
       };
