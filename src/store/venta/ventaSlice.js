@@ -13,7 +13,14 @@ export const ventaSlice = createSlice({
             state.activeVenta = payload;
         },
         onAddNewVenta: (state, { payload }) => {
-            state.ventas.push(payload);
+            
+            //Para que el websocket no tenga problemas de duplicacion de muestra en pedidos
+            const exists = state.ventas.some( dbVen => dbVen.id === payload.id );
+            if ( !exists ){
+            state.ventas.push( payload );
+            }
+                
+            // state.ventas.push(payload);
             state.detalleVentas = [];
             state.activeVenta = null;
         },

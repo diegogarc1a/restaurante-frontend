@@ -26,15 +26,15 @@ export const productSlice = createSlice({
         },
         onDeleteProduct: (state, { payload }) => {
             // state.products = state.products.filter( cat => cat.id !== state.activeProduct.id);
-            state.products = state.products.filter( cat => cat.id !== payload.id);
+            state.products = state.products.filter( pro => pro.id !== payload.id);
             state.activeProduct = null;
         },
         onLoadProducts: (state, { payload = [] }) => {
             state.isLoadingProducts = false;
-            payload.forEach( cat => {
-                const exists = state.products.some( dbCat => dbCat.id === cat.id );
+            payload.forEach( pro => {
+                const exists = state.products.some( dbProd => dbProd.id === pro.id );
                 if ( !exists ){
-                    state.products.push( cat );
+                    state.products.push( pro );
                 }
             } )
         },onLogoutProduct: ( state ) => {

@@ -108,7 +108,7 @@ export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit }) => {
                       <label htmlFor="descripcion" className={classNames('font-bold', { 'p-error': isFormFieldValid('descripcion') })}>
                           Descripción*
                       </label>
-                      <InputText id="descripcion" name="descripcion" value={formik.values.descripcion} onChange={formik.handleChange} className={classNames({ 'p-invalid': isFormFieldValid('descripcion') })} />
+                      <InputText id="descripcion" name="descripcion" autoFocus value={formik.values.descripcion} onChange={formik.handleChange} className={classNames({ 'p-invalid': isFormFieldValid('descripcion') })} />
                       {getFormErrorMessage('descripcion')}
                   </div>
               </Dialog>

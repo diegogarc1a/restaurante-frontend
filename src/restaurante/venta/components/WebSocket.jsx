@@ -20,6 +20,7 @@ export const WebSocket = () => {
       console.log("Error: " + error);
     });
 
+
     setStompClient(client);
 
     return () => {
@@ -28,6 +29,5 @@ export const WebSocket = () => {
       }
     };
   }, []);
-
   return <div>Ventas</div>;
 };

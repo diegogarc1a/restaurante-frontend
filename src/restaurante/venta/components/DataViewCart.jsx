@@ -6,8 +6,6 @@ import { DataView } from "primereact/dataview";
 import { DialogDetalleVenta } from "./DialogDetalleVenta";
 import Swal from "sweetalert2";
 import { InputText } from "primereact/inputtext";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 
 const venta = {
     nombrecliente: '',
@@ -20,27 +18,6 @@ export const DataViewCart = ({ cartVisible, setCartVisible }) => {
     const { detalleVentas, startSavingVenta, openVentaModal } = useVentaStore();
     const [detalleVentaEdit, setDetalleVentaEdit] = useState(null);
     const [formValues, setFormValues] = useState(venta)
-
-
-    //PARA WS
-    // const [stompClient, setStompClient] = useState(null);
-    // useEffect(() => {
-    //     const socket = new SockJS("http://localhost:8080/sba-websocket");
-    //      const client = Stomp.over(socket);
-    
-    //     client.connect({}, (frame) => {
-    //     console.log("Connected: " + frame); 
-    //     })
-
-    //     setStompClient(client);
-
-    //   return () => {
-    //     if (stompClient) {
-    //         stompClient.disconnect();
-    //       }
-    //   }
-    // }, [])
-    
 
 
     const onEdit = (detalleVenta, index) => {
@@ -61,10 +38,6 @@ export const DataViewCart = ({ cartVisible, setCartVisible }) => {
         if(detalleVentas.length !== 0){
             venta.nombrecliente = formValues.nombrecliente;
             venta.listaDetalleVenta = detalleVentas;
-           
-            //PARA USAR WS
-            // stompClient.send('/app/guardarVenta',{}, JSON.stringify(venta));
-    
             
             startSavingVenta( venta );
             setCartVisible(false);

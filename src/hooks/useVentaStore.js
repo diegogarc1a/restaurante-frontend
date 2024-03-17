@@ -27,6 +27,16 @@ export const useVentaStore = () => {
         }
     }
 
+    const pedidoFinalizado = async( venta ) => {
+      if( venta.id ){
+        //Actualizando
+        const { data } = await restauranteApi.put("ventas/", {...venta, estado: "Terminado"});
+        dispatch( onUpdateVenta({...venta, estado: data.estado}) );
+        Swal.fire('Exito',"Pedido Terminado", "success");
+        return;
+      }
+    }
+
 
     const startLoadingVentas = async() => {
         try {
@@ -51,10 +61,16 @@ export const useVentaStore = () => {
         } 
   }
 
+      const addVentaWS = (venta) => {
+        dispatch( onAddNewVenta(venta) );
+      }
+
+      const updateVentaWS = (venta) => {
+        dispatch( onUpdateVenta(venta) );
+      }
+
     const addDetalleVenta = ( detalleVenta ) => {
-        
         if(detalleVenta.id >= 0){
-          console.log(detalleVenta);
           dispatch( onUpdateDetalleVenta( detalleVenta ) );
           return;
         }
@@ -89,6 +105,9 @@ export const useVentaStore = () => {
     startDeletingVenta,
     openVentaModal,
     closeVentaModal,
-    addDetalleVenta
+    addDetalleVenta,
+    addVentaWS,
+    updateVentaWS,
+    pedidoFinalizado
   }
 }
