@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 export const useProductStore = () => {
   
     const dispatch = useDispatch();
-    const { products, isLoadingProduct, activeProduct, isProductModalOpen } = useSelector( state => state.product);
+    const { products, isLoadingProducts, activeProduct, isProductModalOpen } = useSelector( state => state.product);
   
     const configHeader = {
         headers: {
@@ -69,7 +69,7 @@ export const useProductStore = () => {
     return {
         //Properties
         products,
-        isLoadingProduct,
+        isLoadingProducts,
         isProductModalOpen,
         activeProduct,
 

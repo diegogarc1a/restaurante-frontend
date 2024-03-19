@@ -11,8 +11,7 @@ export const PedidoPage = () => {
     startLoadingVentas();
   }, []);
 
-return (
+return (  
     <DataViewPedidos/>
-    // <DataViewPedidosTable/>
   )
 }

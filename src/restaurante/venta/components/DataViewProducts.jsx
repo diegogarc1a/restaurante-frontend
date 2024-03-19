@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { classNames } from "primereact/utils";
 import { Button } from "primereact/button";
 import { DataViewLayoutOptions, DataView } from "primereact/dataview";
@@ -56,7 +56,7 @@ export const DataViewProducts = () => {
 
     const gridItem = (product) => {
         return (
-            <div className="sm:col-3 col-12 p-1" key={product.id}>
+            <div className="sm:col-4 col-12 p-1" key={product.id}>
                 <div className="p-4 border-1 surface-border surface-card border-round">
                     <div className="flex flex-wrap align-items-center justify-content-between gap-2">
                         <div className="flex align-items-center gap-2">

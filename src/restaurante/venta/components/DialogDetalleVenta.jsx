@@ -31,7 +31,6 @@ export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit }) => {
      }, [isVentaModalOpen])
     
      useEffect(() => {
-        console.log(detalleVentaEdit);
         if( detalleVentaEdit !== null && detalleVentaEdit !== undefined){
             console.log("Entro");
             const dv = {...detalleVentaEdit};

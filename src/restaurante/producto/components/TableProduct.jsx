@@ -105,7 +105,7 @@ export const TableProducts = () => {
                 stripedRows
                 showGridlines 
               >
-                <Column field="nombre" header="Nombre"></Column>
+                <Column field="nombre" header="Nombre" ></Column>
                 <Column field="descripcion" header="Descripcion"></Column>
                 <Column field="foto" header="Image" align={"center"} body={imageBodyTemplate}></Column>
                 <Column field="tipo" header="Tipo"></Column>

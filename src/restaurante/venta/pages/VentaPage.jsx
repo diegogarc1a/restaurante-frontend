@@ -11,10 +11,10 @@ export const VentaPage = () => {
 
 
   return (
-    <div className="flex flex-column md:flex-row">
-  <div className="p-col-12 md:p-col-8 flex flex-column align-items-center justify-content-center">
-    <DataViewProducts />
-  </div>
-</div>
+  //   <div className="flex flex-column md:flex-row">
+  // <div className="p-col-12 md:p-col-8 flex flex-column align-items-center justify-content-center">
+      <DataViewProducts />
+//   </div>
+// </div>
   );
 };

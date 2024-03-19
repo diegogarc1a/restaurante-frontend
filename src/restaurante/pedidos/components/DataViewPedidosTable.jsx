@@ -149,7 +149,6 @@ export const DataViewPedidosTable = () => {
     return (
         <div className="grid flex justify-content-center flex-wrap">
             <div className="col-12">
-
             <DataTable value={ventas} header={header}
                 globalFilter={globalFilter}
                 className="col-12 p-1" stripedRows

@@ -6,7 +6,7 @@ import { ToolbarProduct } from "../components/ToolbarProduct";
 
 export const ProductoPage = () => {
 
-  const { startLoadingProducts } = useProductStore();
+  const { startLoadingProducts, isLoadingProducts } = useProductStore();
 
   useEffect(() => {
     startLoadingProducts()

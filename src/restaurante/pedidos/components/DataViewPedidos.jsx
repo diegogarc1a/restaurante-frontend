@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import { format, parseISO  } from "date-fns";
+import { es } from 'date-fns/locale';
 import { useVentaStore } from "../../../hooks";
-import { DataView, DataViewLayoutOptions } from "primereact/dataview";
+import { DataView } from "primereact/dataview";
 import { classNames } from "primereact/utils";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
@@ -15,9 +17,9 @@ import { Dropdown } from "primereact/dropdown";
 export const DataViewPedidos = () => {
     const [visible, setVisible] = useState(false);
     const { ventas, addVentaWS, updateVentaWS, pedidoFinalizado } = useVentaStore();
-    const [layout, setLayout] = useState('grid');
     const [pedidoDetalle, setPedidoDetalle] = useState(null);
     const [selectedState, setSelectedState] = useState('Proceso');
+    const [selectedDetalle, setSelectedDetalle] = useState(null);
 
     const states = [
         { label: 'Proceso', value: 'Proceso' },
@@ -65,7 +67,13 @@ export const DataViewPedidos = () => {
         return ventas.filter((venta) => venta.estado === selectedState);
       };
 
-
+    
+      const formatCurrency = (value) => {
+        return value.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        });
+      };
 
     const onSelectPedido = (pedido) => {
         return () => {
@@ -73,66 +81,41 @@ export const DataViewPedidos = () => {
         setPedidoDetalle(pedido);
         };
       };
-    
 
-    const listItem = (pedido, index) => {
-        return (
-            <div className="col-12" key={pedido.id}>
-                <div className={classNames('flex flex-column xl:flex-row xl:align-items-start p-4 gap-4', { 'border-top-1 surface-border': index !== 0 })}>
-                    <div className="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
-                        <div className="flex flex-column align-items-center sm:align-items-start gap-3">
-                            <div className="flex align-items-center gap-3">
-                                <span className="flex align-items-center gap-2">
-                                    <i className="pi pi-tag"></i>
-                                    <span className="font-semibold">{pedido.nombrecliente}</span>
-                                </span>
-                            </div>
-                        </div>
-                        <div className="flex align-items-center">
-                            <DataTable value={pedido.listaDetalleVenta} 
-                        size="small" 
-                        className="col-12 p-1" 
-                        stripedRows showGridlines  
-                        tableStyle={{ minWidth: '35rem' }}>
-                            <Column align={"center"} field="cantidad" header="Cantidad"></Column>
-                            <Column field="producto.nombre" header="Producto"></Column>
-                            <Column field="descripcion" header="Descripcion"></Column>
-                        </DataTable>
-                            </div>
-                        <div className="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
-                            <span className="text-2xl font-semibold">${pedido.preciototal}</span>
-                            <Button icon="pi pi-list" className="p-button-rounded"></Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    };
 
     const gridItem = (pedido, index) => {
         return (
-            <div className="sm:col-6 col-12 p-1" key={pedido.id}>
-                <div className={classNames("p-4 border-1 border-round", { 'bg-teal-100 text-teal-900' : index === 0})}>
+            <div className="sm:col-12 col-12 p-1" key={pedido.id}>
+                <div className={classNames("p-4 border-1 border-round", { 'bg-teal-100 text-teal-900' : index === 0 && pedido.estado === 'Proceso'})}>
                     <div className="flex flex-wrap align-items-center justify-content-between gap-2 ">
                         <div className="flex align-items-center gap-2">
                             <i className="pi pi-user"></i>
                             <span className="font-semibold">{pedido.nombrecliente}</span>
                         </div>
+                            <span className="font-semibold">{format(parseISO(pedido.fecha.replace(/(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})/, '$3-$2-$1T$4:$5:$6')), 'cccc, dd MMMM y, h:mm:ss a', { locale: es })}</span>
                             <Tag severity={ (pedido.estado === "Proceso") ? "danger" : "success" } rounded value={pedido.estado} icon="pi pi-info-circle"></Tag>
                     </div>
                     <div className="flex flex-column align-items-center gap-3 py-5">
-                        <DataTable value={pedido.listaDetalleVenta} 
+                        <DataTable value={pedido.listaDetalleVenta}
+                        selectionMode="checkbox"
+                        selection={selectedDetalle} onSelectionChange={(e) => setSelectedDetalle(e.value)} 
                         size="small" 
                         className="col-12 p-1" 
                         stripedRows showGridlines  
                         tableStyle={{ minWidth: '20rem' }}>
+                            {
+                            pedido.estado === "Proceso" 
+                            ? <Column selectionMode="multiple" headerStyle={{ width: '3rem' }}></Column>
+                            : ''
+                            }
                             <Column align={"center"} field="cantidad" header="Cantidad"></Column>
                             <Column field="producto.nombre" header="Producto"></Column>
                             <Column field="descripcion" header="Descripcion"></Column>
                         </DataTable>
                     </div>
                     <div className="flex align-items-center justify-content-between">
-                        <span className="text-lg font-semibold">${pedido.preciototal}</span>
+                        <span className="text-lg font-semibold">Total a pagar: {formatCurrency(pedido.preciototal)}
+                        </span>
                         {
                             (pedido.estado === "Proceso") 
                             ? <Button icon="pi pi-check-circle" severity="success" size="large"
@@ -146,17 +129,9 @@ export const DataViewPedidos = () => {
         );
     };
 
-    const itemTemplate = (pedido, layout, index) => {
-        if (!pedido) {
-            return;
-        }
-
-        if (layout === 'list') return listItem(pedido, index);
-        else if (layout === 'grid') return gridItem(pedido, index);
-    };
-
-    const listTemplate = (pedidos, layout) => {
-        return <div className="grid grid-nogutter flex flex-wrap justify-content-center">{pedidos.map((pedido, index) => itemTemplate(pedido, layout, index))}</div>;
+   
+    const listTemplate = (pedidos) => {
+        return <div className="grid grid-nogutter flex flex-wrap justify-content-center">{pedidos.map((pedido, index) => gridItem(pedido, index))}</div>;
     };
 
     const header = () => {
@@ -164,9 +139,7 @@ export const DataViewPedidos = () => {
         <div>
             <Dropdown value={selectedState} options={states} optionLabel="label" onChange={onFilterVentas} placeholder="Seleccione estado" className="w-full md:w-14rem" />
             <div className="flex justify-content-end m-2">
-                <div>
-                <DataViewLayoutOptions layout={layout} onChange={(e) => setLayout(e.value)} />
-                </div>
+
                 <div className="ml-2">
                 </div>
             </div>
@@ -186,7 +159,7 @@ export const DataViewPedidos = () => {
     return (
         <div className="grid flex justify-content-center flex-wrap">
             <div className="col-12">
-            <DataView value={filterVentas(ventas)} listTemplate={listTemplate} layout={layout} header={header()}/>
+            <DataView value={filterVentas(ventas)} listTemplate={listTemplate} header={header()} paginator rows={5}/>
 
             <ConfirmDialog group="declarative" visible={visible} 
                 onHide={() => setVisible(false)} 
