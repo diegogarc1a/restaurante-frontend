@@ -1,20 +1,17 @@
 import { useState } from "react";
-import { classNames } from "primereact/utils";
-import { Button } from "primereact/button";
-import { DataViewLayoutOptions, DataView } from "primereact/dataview";
-import { Badge } from "primereact/badge";
 import { useProductStore, useVentaStore } from "../../../hooks";
-import { DialogDetalleVenta } from "./DialogDetalleVenta";
-import { DataViewCart } from "./DataViewCart";
+import { DataView } from "primereact/dataview";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import { DialogDetalleVenta } from "../../venta/components/DialogDetalleVenta";
 
-export const DataViewProducts = () => {
+export const DialogDataViewProducts = ({ visible, setVisible }) => {
+
 
     const { products, setActiveProduct } = useProductStore();
-    const { openVentaModal, detalleVentas } = useVentaStore();
+    const { openVentaModal } = useVentaStore();
     const [layout, setLayout] = useState('grid');
-    const [cartVisible, setCartVisible] = useState(false);
     const [productDetalle, setProductDetalle] = useState(null);
-
 
     const onSelectProduct = (product) => {
         return () => {
@@ -22,6 +19,10 @@ export const DataViewProducts = () => {
           openVentaModal();
         };
       };
+
+      const handleHide = () => {
+        setVisible(false);
+      }
     
 
     const gridItem = (product) => {
@@ -58,31 +59,17 @@ export const DataViewProducts = () => {
         return <div className="grid grid-nogutter flex flex-wrap justify-content-center">{products.map((product, index) => itemTemplate(product, layout, index))}</div>;
     };
 
-    const header = () => {
-        return (
-            <div className="flex justify-content-between p-1 bg-primary border-round m-2">
-                <div>
-                    <p className="ml-2 text-center">Modulo de Ventas</p>
-                </div>
-                <div className="mr-2">
-                    <Button className="p-button-rounded" icon="pi pi-shopping-cart" size="large" severity="success" onClick={()=> setCartVisible(true)}>
-                        <Badge value={detalleVentas.reduce((acc, curr) => acc + curr.cantidad, 0)}
-                        ></Badge>
-                    </Button>
-                </div>
-            </div>
-        );
-    };
 
-
-    return (
-        <div className="grid flex justify-content-center flex-wrap">
-            <div className="col-12">
-            <DataView value={products} listTemplate={listTemplate} layout={layout} header={header()}/>
-            </div>
-            <DialogDetalleVenta productoDetalle={productDetalle} />
-            <DataViewCart cartVisible={cartVisible} setCartVisible={setCartVisible}/>
-        </div>
-    )
+  return (
+    <Dialog header='Lista productos' visible={visible} draggable={false} onHide={handleHide}
+     breakpoints={{ '960px': '85', '641px': '85vw' }} modal className="p-fluid">
+    <div className="grid flex justify-content-center flex-wrap">
+    <div className="col-12">
+            <DataView value={products} listTemplate={listTemplate} layout={layout}/>
+    </div>
+    </div>
+    <DialogDetalleVenta productoDetalle={productDetalle} />
+    </Dialog>
+    
+  )
 }
-        

@@ -34,7 +34,6 @@ export const useCategoryStore = () => {
 
     const startLoadingCategories = async() => {
         try {
-            
             const { data } = await restauranteApi.get('categorias/');
             dispatch( onLoadCategories(data) );
 

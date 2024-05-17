@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { restauranteApi } from "../api";
-import { onAddNewDetalleVenta, onAddNewVenta, onCloseVentaModal, onDeleteVenta, onLoadVentas, onOpenVentaModal, onSetActiveVenta, onUpdateDetalleVenta, onUpdateVenta } from "../store/venta/ventaSlice";
+import { onAddNewDetalleVenta, onAddNewVenta, onCleanDetalleVenta, onCloseDetalleVentaModal, onCloseVentaModal, onDeleteDetalleVenta, onDeleteVenta, onLoadVentas, onOpenVentaModal, onSetActiveVenta, onUpdateDetalleVenta, onUpdateVenta } from "../store/venta/ventaSlice";
 import Swal from "sweetalert2";
 
 export const useVentaStore = () => {
@@ -17,6 +17,8 @@ export const useVentaStore = () => {
             Swal.fire('Exito',"Venta Modificada", "success");
             return;
           }
+          
+          console.log(venta);
 
           const { data } = await restauranteApi.post("ventas/", venta);
           dispatch( onAddNewVenta({...venta, id: data.id}) );
@@ -30,9 +32,46 @@ export const useVentaStore = () => {
     const pedidoFinalizado = async( venta ) => {
       if( venta.id ){
         //Actualizando
-        const { data } = await restauranteApi.put("ventas/", {...venta, estado: "Terminado"});
-        dispatch( onUpdateVenta({...venta, estado: data.estado}) );
+        const { data } = await restauranteApi.patch("ventas/finalizarVenta", venta);
+        console.log(data);
+        dispatch( onUpdateVenta({...data }) );
         Swal.fire('Exito',"Pedido Terminado", "success");
+        return;
+      }
+    }
+
+    const pagarPedido = async( id, cantidad ) => {
+      try {
+        // Create a new FormData object
+        const formData = new FormData();
+    
+        // Add the id and cantidad to the form-data
+        formData.append('id', id);
+        formData.append('cantidad', cantidad);
+    
+        // Send the form-data request
+        const { data } = await restauranteApi.patch("ventas/pagarVenta", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        console.log(data);
+        dispatch( onUpdateVenta({...data }) );
+        Swal.fire('Exito',"Pedido Pagado", "success");
+        return;
+    
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    }
+
+    const cambiarEstadoDv = async( detalleventa ) => {
+      if( detalleventa.id ){
+        //Actualizando
+        const { data } = await restauranteApi.patch("ventas/cambiarEstadoDv", {...detalleventa});
+        dispatch( onUpdateVenta({...data}) );
         return;
       }
     }
@@ -70,11 +109,16 @@ export const useVentaStore = () => {
       }
 
     const addDetalleVenta = ( detalleVenta ) => {
-        if(detalleVenta.id >= 0){
+        if(detalleVenta.index >= 0){
           dispatch( onUpdateDetalleVenta( detalleVenta ) );
           return;
         }
         dispatch( onAddNewDetalleVenta( detalleVenta ) );
+    }
+
+    const deleteDetalleVenta = ( detalleVenta, rowIndex ) => {
+      detalleVenta = {...detalleVenta, index: rowIndex};
+      dispatch( onDeleteDetalleVenta( detalleVenta ) );
     }
 
     const setActiveVenta = ( venta ) => {
@@ -87,6 +131,13 @@ export const useVentaStore = () => {
 
     const closeVentaModal = () => {
       dispatch( onCloseVentaModal() )
+    }
+    const closeDetalleVentaModal = () => {
+      dispatch( onCloseDetalleVentaModal() )
+    }
+
+    const cleanDetalleVenta = () => {
+      dispatch( onCleanDetalleVenta() );
     }
 
   return {
@@ -105,9 +156,14 @@ export const useVentaStore = () => {
     startDeletingVenta,
     openVentaModal,
     closeVentaModal,
+    closeDetalleVentaModal,
     addDetalleVenta,
+    deleteDetalleVenta,
     addVentaWS,
     updateVentaWS,
-    pedidoFinalizado
+    pedidoFinalizado,
+    pagarPedido,
+    cambiarEstadoDv,
+    cleanDetalleVenta
   }
 }

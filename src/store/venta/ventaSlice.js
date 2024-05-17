@@ -48,7 +48,7 @@ export const ventaSlice = createSlice({
         },
         onAddNewDetalleVenta: (state, { payload }) => {
             // state.detalleVentas.push(payload);
-            const index = state.detalleVentas.findIndex(detalle => detalle.producto.id === payload.producto.id &&
+            const index = state.detalleVentas.findIndex(detalle => detalle.producto.id === payload.producto.index &&
                 detalle.descripcion === payload.descripcion );
 
             if (index !== -1) {
@@ -59,9 +59,12 @@ export const ventaSlice = createSlice({
                 state.detalleVentas.push(payload);
             }
         },
-        onUpdateDetalleVenta: (state, { payload }) => {
-            state.detalleVentas[payload.id] = payload;
+        onDeleteDetalleVenta: (state, { payload }) => { 
+            state.detalleVentas.splice(payload.index, 1);
         },
+        onUpdateDetalleVenta: (state, { payload }) => {
+            state.detalleVentas[payload.index] = payload;
+          },
         onLogoutVenta: ( state ) => {
             state.isLoadingVentas= true,
             state.ventas= [],
@@ -73,7 +76,13 @@ export const ventaSlice = createSlice({
         onCloseVentaModal: ( state ) => {
             state.isVentaModalOpen = false;
             state.activeVenta = null;
-        }
+        },
+        onCloseDetalleVentaModal: ( state ) => {
+            state.isVentaModalOpen = false;
+        },
+        onCleanDetalleVenta: (state) => {
+            state.detalleVentas = [];
+        },
     }
 });
 
@@ -85,8 +94,11 @@ export const {
     onDeleteVenta, 
     onLoadVentas,
     onAddNewDetalleVenta,
+    onDeleteDetalleVenta,
     onUpdateDetalleVenta,
     onLogoutVenta,
     onOpenVentaModal,
-    onCloseVentaModal
+    onCloseVentaModal,
+    onCloseDetalleVentaModal,
+    onCleanDetalleVenta
 } = ventaSlice.actions;

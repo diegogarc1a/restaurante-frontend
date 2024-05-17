@@ -96,7 +96,7 @@ export const TableProducts = () => {
       return (
         <div className="grid flex justify-content-center flex-wrap">
           <div className="col-10">
-    
+
               <DataTable
                 header={header}
                 value={products}

@@ -18,7 +18,7 @@ const detalleVenta = {
   };
 
 export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit }) => {
-    const { addDetalleVenta, closeVentaModal, isVentaModalOpen } = useVentaStore();
+    const { addDetalleVenta, closeVentaModal, closeDetalleVentaModal, isVentaModalOpen } = useVentaStore();
 
     
     useEffect(() => {
@@ -32,9 +32,8 @@ export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit }) => {
     
      useEffect(() => {
         if( detalleVentaEdit !== null && detalleVentaEdit !== undefined){
-            console.log("Entro");
             const dv = {...detalleVentaEdit};
-            formik.setValues({id: dv.id, cantidad: dv.cantidad,
+            formik.setValues({index: dv.index, id : dv.id, cantidad: dv.cantidad,
                 descripcion: dv.descripcion,
             producto: {...dv.producto}});    
             }
@@ -55,6 +54,7 @@ export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit }) => {
           return errors;
       },
         onSubmit: (data) => {
+        console.log(data);
         addDetalleVenta(data);
         onCloseDialog();
         formik.resetForm();
@@ -68,7 +68,7 @@ export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit }) => {
 
 
     const onCloseDialog = () => {
-        closeVentaModal();
+        closeDetalleVentaModal();
         formik.resetForm();
     }
   
@@ -85,12 +85,14 @@ export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit }) => {
               <Dialog header={'Agregar Producto'} visible={isVentaModalOpen} onHide={onCloseDialog} draggable={false} footer={ventaDialogFooter}
                   style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid"
               >
-                    <div className="field">
+                    <div className="field text-center">
                       <label htmlFor="producto" className='font-bold'>
-                          Producto*
-                      </label>
-                      <InputText id="producto" name="producto" value={formik.values.producto.nombre} disabled />
+                          {formik.values.producto.nombre}
+                      </label>                 
+                      <img className="sm:w-12rem xl:w-20rem shadow-2 block xl:block mx-auto border-round" width="200px" src={`${import.meta.env.VITE_API_URL}recursos/${formik.values.producto.foto}`} alt={formik.values.producto.descripcion} />
+                   
                   </div>
+
                    <div className="field">
                       <label htmlFor="cantidad" className={classNames('font-bold', { 'p-error': isFormFieldValid('cantidad') })}>
                           Cantidad*
