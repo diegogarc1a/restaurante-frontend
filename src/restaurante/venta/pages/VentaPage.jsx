@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { DataViewProducts } from "../components/DataViewProducts";
-import { useProductStore } from "../../../hooks";
+import { useCategoryStore, useProductStore } from "../../../hooks";
 
 export const VentaPage = () => {
   const { startLoadingProducts } = useProductStore();
+  const { startLoadingCategories } = useCategoryStore();
 
   useEffect(() => {
     startLoadingProducts();
+    startLoadingCategories();
   }, []);
 
 

@@ -1,20 +1,20 @@
 import { useDispatch, useSelector } from "react-redux";
 import { restauranteApi } from "../api";
-import { onAddNewDetalleVenta, onAddNewVenta, onCleanDetalleVenta, onCloseDetalleVentaModal, onCloseVentaModal, onDeleteDetalleVenta, onDeleteVenta, onLoadVentas, onOpenVentaModal, onSetActiveVenta, onUpdateDetalleVenta, onUpdateVenta } from "../store/venta/ventaSlice";
+import { onAddNewDetalleVenta, onAddNewVenta, onCleanDetalleVenta, onCloseDetalleVentaModal, onCloseVentaModal, onDeleteDetalleVenta, onDeleteVenta, onLoadVentas, onOpenVentaModal, onSetActiveVenta, onTotalRecords, onUpdateDetalleVenta, onUpdateVenta } from "../store/venta/ventaSlice";
 import Swal from "sweetalert2";
 
 export const useVentaStore = () => {
     const dispatch = useDispatch();
-    const { ventas, detalleVentas, activeVenta, isLoadingVentas, isVentaModalOpen } = useSelector( state => state.venta );
+    const { ventas, detalleVentas, activeVenta, isLoadingVentas, isVentaModalOpen, totalRecords } = useSelector( state => state.venta );
 
     const startSavingVenta = async( venta ) => {
         try {
 
           if( venta.id ){
             //Actualizando
-            await restauranteApi.put("ventas/", venta);
-            dispatch( onUpdateVenta({...venta}) );
-            Swal.fire('Exito',"Venta Modificada", "success");
+            const {data} = await restauranteApi.put("ventas/", venta);
+            dispatch( onUpdateVenta({...data}) );
+            Swal.fire('Exito',"Venta modificada", "success");
             return;
           }
           
@@ -22,7 +22,7 @@ export const useVentaStore = () => {
 
           const { data } = await restauranteApi.post("ventas/", venta);
           dispatch( onAddNewVenta({...venta, id: data.id}) );
-          Swal.fire('Exito',"Venta Guardada", "success");
+          Swal.fire('Exito',"Venta guardada", "success");
           
         } catch (error) {
           console.log(error);
@@ -35,7 +35,7 @@ export const useVentaStore = () => {
         const { data } = await restauranteApi.patch("ventas/finalizarVenta", venta);
         console.log(data);
         dispatch( onUpdateVenta({...data }) );
-        Swal.fire('Exito',"Pedido Terminado", "success");
+        Swal.fire('Exito',"Pedido terminado", "success");
         return;
       }
     }
@@ -57,8 +57,10 @@ export const useVentaStore = () => {
         });
 
         console.log(data);
-        dispatch( onUpdateVenta({...data }) );
-        Swal.fire('Exito',"Pedido Pagado", "success");
+
+        await dispatch( onUpdateVenta({...data }) );
+        
+        Swal.fire('Exito',"Pedido pagado", "success");
         return;
     
       } catch (error) {
@@ -77,11 +79,11 @@ export const useVentaStore = () => {
     }
 
 
-    const startLoadingVentas = async() => {
+    const startLoadingVentas = async(page=0,size=5,estado='Proceso') => {
         try {
-            
-            const { data } = await restauranteApi.get('ventas/');
-            dispatch( onLoadVentas(data) );
+            const { data } = await restauranteApi.get(`ventas/lista?page=${page}&size=${size}&estado=${estado}&sortDirection=${estado === 'Proceso' ? 'asc' : 'desc' }`);
+            dispatch( onLoadVentas(data.content));
+            dispatch( onTotalRecords(data.totalElements));
 
         } catch (error) {
             console.log("Error cargando ventas");
@@ -91,21 +93,23 @@ export const useVentaStore = () => {
 
     const startDeletingVenta = async( venta ) => {
         try {
-          
           await restauranteApi.delete(`ventas/${venta.id}`);
           dispatch( onDeleteVenta( venta ) );
-          Swal.fire('Exito',"Venta Eliminada", "success");
+          Swal.fire('Exito',"Venta eliminada", "success");
         } catch (error) {
             console.log(error);
         } 
   }
 
       const addVentaWS = (venta) => {
-        dispatch( onAddNewVenta(venta) );
+          dispatch(onAddNewVenta(venta));
       }
 
       const updateVentaWS = (venta) => {
         dispatch( onUpdateVenta(venta) );
+      }
+      const eliminarVentaWS = (venta) => {
+        dispatch( onDeleteVenta(venta) );
       }
 
     const addDetalleVenta = ( detalleVenta ) => {
@@ -140,6 +144,21 @@ export const useVentaStore = () => {
       dispatch( onCleanDetalleVenta() );
     }
 
+    const getEstadisticas = async( ) => {
+        const { data } = await restauranteApi.get("ventas/estadisticas-hoy",);
+        return data;
+    }
+
+    const getVentasPorProducto = async( ) => {
+        const { data } = await restauranteApi.get("ventas/ventas-por-producto",);
+        return data;
+    }
+
+    const getVentasPorSemana = async( ) => {
+        const { data } = await restauranteApi.get("ventas/ventas-por-semana",);
+        return data;
+    }
+
   return {
     //*Properties
     ventas,
@@ -147,6 +166,7 @@ export const useVentaStore = () => {
     isLoadingVentas,
     isVentaModalOpen,
     detalleVentas,
+    totalRecords,
 
 
     //*Methods
@@ -161,9 +181,13 @@ export const useVentaStore = () => {
     deleteDetalleVenta,
     addVentaWS,
     updateVentaWS,
+    eliminarVentaWS,
     pedidoFinalizado,
     pagarPedido,
     cambiarEstadoDv,
-    cleanDetalleVenta
+    cleanDetalleVenta,
+    getEstadisticas,
+    getVentasPorProducto,
+    getVentasPorSemana
   }
 }

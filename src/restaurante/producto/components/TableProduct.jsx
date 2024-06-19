@@ -1,17 +1,24 @@
 import { Tag } from "primereact/tag";
-import { useProductStore } from "../../../hooks";
-import { Fragment } from "react";
+import { useCategoryStore, useProductStore } from "../../../hooks";
+import { Fragment, useState } from "react";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import Swal from "sweetalert2";
 import { Image } from "primereact/image";
 import { DialogProduct } from "./DialogProduct";
+import { Dropdown } from "primereact/dropdown";
+import { FilterMatchMode } from "primereact/api";
 
 
 export const TableProducts = () => {
 
     const { products, startDeletingProduct, setActiveProduct, openProductModal } = useProductStore();
+    const { categories } = useCategoryStore();
+
+    const [filters] = useState({
+      'categoria.nombre': { value: null, matchMode: FilterMatchMode.EQUALS },
+  });
 
     const header = (
         <div className="flex flex-wrap align-items-center justify-content-center">
@@ -91,6 +98,39 @@ export const TableProducts = () => {
     const priceBodyTemplate = (rowData) => {
         return formatCurrency(rowData.precio);
       };
+
+      const categoryBodyTemplate = (rowData) => {
+        const category = rowData.categoria.nombre;
+        
+        return (
+            <div className="flex align-items-center gap-2">
+                <span>{category}</span>
+            </div>
+        );
+    };
+
+    const categoryFilterTemplate = (options) => {
+      return (
+        <Dropdown
+          value={options.value}
+          options={categories.map((category) => ({ label: category.nombre, value: category.nombre }))}
+          onChange={(e) => options.filterApplyCallback(e.value)}
+          itemTemplate={categoryItemTemplate}
+          placeholder="Seleccione..."
+          className="p-column-filter"
+          showClear
+          style={{ minWidth: '12rem' }}
+        />
+      );
+    };
+
+  const categoryItemTemplate = (option) => {
+    return (
+        <div className="flex align-items-center gap-2">
+         <span>{option.label}</span>
+        </div>
+    );
+};
     
     
       return (
@@ -99,6 +139,8 @@ export const TableProducts = () => {
 
               <DataTable
                 header={header}
+                filters={filters}
+                filterDisplay="row"
                 value={products}
                 dataKey="id"
                 tableStyle={{ minWidth: "50rem" }}
@@ -109,7 +151,7 @@ export const TableProducts = () => {
                 <Column field="descripcion" header="Descripcion"></Column>
                 <Column field="foto" header="Image" align={"center"} body={imageBodyTemplate}></Column>
                 <Column field="tipo" header="Tipo"></Column>
-                <Column field="categoria.nombre" header="Categoria"></Column>
+                <Column field="categoria.nombre" body={categoryBodyTemplate} showFilterMenu={false} filter filterElement={categoryFilterTemplate} header="Categoria"></Column>
                 <Column field="precio" header="Precio" body={priceBodyTemplate} ></Column>
                 <Column
                   align={"center"}

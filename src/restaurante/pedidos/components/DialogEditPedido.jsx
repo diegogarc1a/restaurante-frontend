@@ -1,13 +1,14 @@
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog"
-import { useProductStore, useVentaStore } from "../../../hooks";
+import { useCategoryStore, useProductStore, useVentaStore } from "../../../hooks";
 import { Fragment, useEffect, useState } from "react";
 import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
 import { Button } from "primereact/button";
 import { DialogDetalleVenta } from "../../venta/components/DialogDetalleVenta";
 import { DialogDataViewProducts } from "./DialogDataViewProducts";
+import Swal from "sweetalert2";
 
 export const DialogEditPedido = ({ visible, setVisible }) => {
     const { activeVenta, openVentaModal, detalleVentas, deleteDetalleVenta, cleanDetalleVenta, startSavingVenta } = useVentaStore();
@@ -17,9 +18,11 @@ export const DialogEditPedido = ({ visible, setVisible }) => {
 
 
     const { startLoadingProducts } = useProductStore();
+    const { startLoadingCategories } = useCategoryStore();
 
     useEffect(() => {
       startLoadingProducts();
+      startLoadingCategories();
     }, []);
     
 
@@ -31,6 +34,13 @@ export const DialogEditPedido = ({ visible, setVisible }) => {
     const onSubmit = () => {
         const ventaGuardar = {...activeVenta};
         ventaGuardar.listaDetalleVenta = detalleVentas;
+        console.log(detalleVentas);
+        if(detalleVentas == ''){
+            Swal.fire('Error','Carrito no puede estar vacio', "warning")
+            setVisible(false);
+            cleanDetalleVenta();
+            return;
+        }
         startSavingVenta(ventaGuardar);
         setVisible(false);
         cleanDetalleVenta();
@@ -90,14 +100,16 @@ export const DialogEditPedido = ({ visible, setVisible }) => {
         }
     }
 
-    const isRowSelectable = (event) => (event.data ? isSelectable(event.data) : true);
+    const isRowSelectable = (event) => (
+        event.data ? isSelectable(event.data) : true
+    );
 
     const rowClassName = (data) => (isSelectable(data) ? '' : 'p-disabled');
 
     const footerGroup = (
         <ColumnGroup>
             <Row>
-                <Column footer="Total:" colSpan={3} footerStyle={{ textAlign: 'right' }} />
+                <Column footer="Total:" colSpan={4} footerStyle={{ textAlign: 'right' }} />
                 <Column footer={totalVenta} />
                 <Column/>
             </Row>
@@ -112,9 +124,14 @@ export const DialogEditPedido = ({ visible, setVisible }) => {
         );
     };
 
+    const subtotalBodyTemplate = (rowData) => {
+        return formatCurrency(rowData.producto.precio * rowData.cantidad);
+      };
+      
+
   return (
-    <Dialog header='Editar pedido' visible={visible} draggable={false} onHide={handleHide}
-    style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid">
+    <Dialog header='Editar pedido' visible={visible} draggable={false} onHide={handleHide} blockScroll='true'
+    style={{ width: '50rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid">
         
         <div className="flex">
             <Button className="flex align-items-center justify-content-center font-bold border-round m-2"
@@ -123,18 +140,19 @@ export const DialogEditPedido = ({ visible, setVisible }) => {
                 
             </Button>
         </div>
-       <DataTable value={detalleVentas} stripedRows size="small" key="id" header="Carrito de venta"
-                isDataSelectable={isRowSelectable} rowClassName={rowClassName} 
+       <DataTable value={detalleVentas} stripedRows showGridlines size="small" key="id" header="Carrito de venta" 
+                isDataSelectable={isRowSelectable} rowClassName={rowClassName}
                 selectionMode="single" onRowSelect={onRowSelect}
                 footerColumnGroup={footerGroup}
                 emptyMessage="Carrito de venta vacío..."
             >
-                <Column field="producto.nombre" header="Producto" ></Column>
+                <Column field="producto.nombre" header="Producto"></Column>
                 <Column field="cantidad" header="Cantidad" align={"center"} ></Column>
                 <Column field="descripcion" header="Descripcion" ></Column>
                 <Column header="Precio" body={priceBodyTemplate}  ></Column>
-                <Column body={actionBodyTemplate} align={"center"} exportable={false} ></Column>
-
+                <Column header="Subtotal" body={subtotalBodyTemplate}  ></Column>
+                <Column header='Accion' body={actionBodyTemplate} align={"center"} exportable={false} ></Column>
+            
             </DataTable>
         <div className="flex">
             <Button className="flex align-items-center justify-content-center font-bold border-round m-2"

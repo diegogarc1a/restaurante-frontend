@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import { format, parseISO  } from "date-fns";
+import { compareAsc, compareDesc, format, parse, parseISO  } from "date-fns";
 import { es } from 'date-fns/locale';
 import { useVentaStore } from "../../../hooks";
 import { DataView } from "primereact/dataview";
@@ -15,31 +15,35 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { Checkbox } from "primereact/checkbox";
 import { DialogPago } from "./DialogPago";
-import { useNavigate } from "react-router-dom";
 import { DialogEditPedido } from "./DialogEditPedido";
+import { Paginator } from "primereact/paginator";
+
 
 export const DataViewPedidos = () => {
     const [visible, setVisible] = useState(false);
+    const [visibleDialogEliminar, setVisibleDialogEliminar] = useState(false);
     const [visiblePago, setVisiblePago] = useState(false);
     const [visibleEditPedido, setVisibleEditPedido] = useState(false);
-    const { ventas, addVentaWS, updateVentaWS, pedidoFinalizado, cambiarEstadoDv, setActiveVenta, addDetalleVenta } = useVentaStore();
-    const [pedidoDetalle, setPedidoDetalle] = useState(null);
+    const { ventas, startLoadingVentas, startDeletingVenta, addVentaWS, updateVentaWS, eliminarVentaWS, pedidoFinalizado, cambiarEstadoDv, setActiveVenta, addDetalleVenta, totalRecords } = useVentaStore();
+    const [pedido, setPedido] = useState(null);
     const [selectedState, setSelectedState] = useState('Proceso');
-    const [selectedDetalle, setSelectedDetalle] = useState(null);
-    const [selectedRows, setSelectedRows] = useState([]);
+    const [page, setPage] = useState(0);
+    const [size, setSize] = useState(5);
+    const [first, setFirst] = useState(0);
     const toast = useRef(null);
-    const navigate = useNavigate();
+    
     
     let notificationSound = new Audio('./sounds/beep.mp3'); 
 
     const states = [
-        { label: 'Proceso', value: 'Proceso' },
+        { label: 'Proceso', value: 'Proceso'},
         { label: 'Terminado', value: 'Terminado' },
         { label: 'Pagado', value: 'Pagado' },
       ];
     
-        const [stompClient, setStompClient] = useState(null);
-        useEffect(() => {
+      const [stompClient, setStompClient] = useState(null);
+
+      useEffect(() => {
         const socket = new SockJS(`${import.meta.env.VITE_API_URL}ws`);
         const client = Stomp.over(socket);
     
@@ -53,7 +57,11 @@ export const DataViewPedidos = () => {
         });
         client.subscribe("/topic/editventas", (message) => {
             // console.log("Message received: " + message.body);
-            updateVentaWS(JSON.parse(message.body));
+            const data = JSON.parse(message.body);
+            updateVentaWS(data);
+        });
+        client.subscribe("/topic/eliminarventas", (message) => {
+            eliminarVentaWS(JSON.parse(message.body));
         });
         }, (error) => {
         console.log("Error: " + error);   
@@ -68,6 +76,10 @@ export const DataViewPedidos = () => {
         };
     }, []);
         
+
+    useEffect(() => {
+        startLoadingVentas(page,size, selectedState);
+    }, [page, selectedState, size]);
 
     const onFilterVentas = (state) => {
         setSelectedState(state.value);
@@ -88,7 +100,7 @@ export const DataViewPedidos = () => {
     const onSelectPedido = (pedido) => {
         return () => {
         setVisible(true);
-        setPedidoDetalle(pedido);
+        setPedido(pedido);
         };
       };
 
@@ -102,25 +114,27 @@ export const DataViewPedidos = () => {
       const onSelectPedidoEditar = (pedido) => {
         return () => {
         setActiveVenta(pedido);
-       
         pedido.listaDetalleVenta.forEach((item)=> {
             addDetalleVenta(item);
         });
-      
-        // addDetalleVenta(item);
+        
         setVisibleEditPedido(true);
         };
       }; 
 
+      const onSelectPedidoEliminar = (pedido) => {
+        return () => {
+        setVisibleDialogEliminar(true);
+        setPedido(pedido);
+        };
+      };
+
       const onChangeEstado = (detalleVenta) => () => {
         cambiarEstadoDv(detalleVenta)
       }
-
-    //   const rowClassName = (data) => ((data.estadoFinal == false) ? '' : 'p-disabled line-through');
-
       const rowClassName = (data) => {
         if ('estadoFinal' in data) {
-          return ((data.estadoFinal == false) ? '' : 'p-disabled line-through')
+          return ((data.estadoFinal == false) ? '' : 'p-disabled')
           
         } else {
           return '';
@@ -139,25 +153,35 @@ export const DataViewPedidos = () => {
         
         return (
             <div className="sm:col-12 col-12 p-1" key={pedido.id}>
-                <div className={classNames("p-4 border-1 border-round", { 'bg-teal-100 text-teal-900' : index === 0 && pedido.estado === 'Proceso'})}>
+                <div className={classNames("p-4 border-1 border-round shadow-6", { 'bg-teal-100 text-teal-900' : index === 0 && pedido.estado === 'Proceso'})}>
                     <div className="flex flex-wrap align-items-center justify-content-between gap-2 ">
                         <div className="flex align-items-center gap-2">
                             <i className="pi pi-user"></i>
                             <span className="font-semibold">{pedido.nombrecliente}</span>
                         </div>
                             <span className="font-semibold">{format(parseISO(pedido.fecha.replace(/(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})/, '$3-$2-$1T$4:$5:$6')), 'cccc, dd MMMM y, h:mm:ss a', { locale: es })}</span>
+                            <div>
                             <Tag severity={ (pedido.estado === "Proceso") ? "danger" : "success" } rounded value={pedido.estado} icon="pi pi-info-circle"></Tag>
+                    
+                            {
+                            pedido.estado != 'Pagado' && 
+                            <Button icon="pi pi-trash" severity="danger" size="large" className="p-button-rounded mr-2 ml-2" onClick={onSelectPedidoEliminar(pedido)}></Button>
+                            }
+
+                            </div>
+
                     </div>
                     <div className="flex flex-column align-items-center gap-3 py-5">
                         <DataTable value={pedido.listaDetalleVenta}
                         size="small" rowClassName={rowClassName}
                         className="col-12 p-1" 
                         stripedRows showGridlines  
-                        tableStyle={{ minWidth: '20rem' }}>
+                        tableStyle={{ minWidth: '20rem' }}
+
+                        >
                             {
-                            pedido.estado === "Proceso" 
-                            ? <Column body={selectedBodyTemplate} align={"center"} header="¿Listo?"/>
-                            : ''
+                            pedido.estado === "Proceso" &&
+                            <Column body={selectedBodyTemplate} align={"center"} header="¿Listo?"/>
                             }
                             <Column align={"center"} field="cantidad" header="Cantidad"></Column>
                             <Column field="producto.nombre" header="Producto"></Column>
@@ -169,8 +193,7 @@ export const DataViewPedidos = () => {
                         <span className="text-lg font-semibold">Total a pagar: {formatCurrency(pedido.preciototal)}
                         </span>
                         {
-                            (pedido.estado === "Proceso") 
-                            ? 
+                            (pedido.estado === "Proceso") &&
                             (
                             <>
                             <div className="flex">
@@ -180,11 +203,11 @@ export const DataViewPedidos = () => {
                             </div>
                             </>
                             )
-                            : ''
+                           
                         }
                         {
-                            (pedido.estado === "Terminado") 
-                            ? (
+                            (pedido.estado === "Terminado") &&
+                             (
                             <>
                             <div className="flex">
                                 <Button icon="pi pi-pencil" severity="info" size="large" className="p-button-rounded mr-2" onClick={onSelectPedidoEditar(pedido)}></Button>
@@ -192,7 +215,7 @@ export const DataViewPedidos = () => {
                             </div>
                             </>
                             )
-                            : ''
+                            
                         }
                         
                     </div>
@@ -201,30 +224,68 @@ export const DataViewPedidos = () => {
         );
     };
 
+    const onPageChange = (event) => {
+        setFirst(event.first);
+        setPage(event.page);
+        setSize(event.rows);
+    };
    
     const listTemplate = (pedidos) => {
         return <div className="grid grid-nogutter flex flex-wrap justify-content-center">{pedidos.map((pedido, index) => gridItem(pedido, index))}</div>;
     };
 
+    const PaginatorCustom = () => {
+        return (
+            filterVentas(ventas) != '' && (
+                <Paginator first={first} rows={size} totalRecords={totalRecords} rowsPerPageOptions={[5 ,10, 20, 30]} onPageChange={onPageChange}/>            
+             )
+              
+        )
+    }
+
     const header = () => {
         return (
         <div>
-            <Dropdown value={selectedState} options={states} optionLabel="label" onChange={onFilterVentas} placeholder="Seleccione estado" className="w-full md:w-14rem" />
-            <div className="flex justify-content-end m-2">
-
+            <Dropdown value={selectedState} options={states} optionLabel="label" onChange={onFilterVentas} placeholder="Seleccione estado" className="w-full md:w-14rem" 
+            />
+            <div className="flex justify-content-center m-2">
                 <div className="ml-2">
+                    {
+                        filterVentas(ventas) == '' && <span>No hay pedidos disponibles en {selectedState}</span> 
+                    }
                 </div>
             </div>
+                <div>
+                <PaginatorCustom/>
+                </div>
         </div>
         );
     };
 
-    //ConfirmDialog options
+    const footer = () => {
+        return (
+            <div>
+                <PaginatorCustom/>
+            </div>
+        )
+    }
+
+
+    //Confirmacion al marcar pedido como Finalizado
     const acceptDialog = () => {
-        pedidoFinalizado(pedidoDetalle);
+        pedidoFinalizado(pedido);
     }
 
     const rejectDialog = () => {
+        console.log("Rechazado")
+    }
+
+    //Confirmacion al marcar pedido para Eliminarlo
+    const acceptDialogEliminar = () => {
+        startDeletingVenta(pedido);
+    }
+
+    const rejectDialogEliminar = () => {
         console.log("Rechazado")
     }
 
@@ -232,9 +293,8 @@ export const DataViewPedidos = () => {
         <div className="grid flex justify-content-center flex-wrap">
             <Toast ref={toast} position="bottom-right"/>
             <div className="col-12">
-            <DataView value={filterVentas(ventas)} listTemplate={listTemplate} header={header()} paginator rows={5} 
-                //SortField es para ordenar mediante la fecha, en proceso se ordena asc, en terminadas desc
-                sortField="fecha" sortOrder={selectedState === 'Terminado' ? -1 : 1} 
+
+            <DataView value={filterVentas(ventas)} listTemplate={listTemplate} header={header()} footer={footer()} emptyMessage="No hay pedidos disponibles"
             />
             <ConfirmDialog group="declarative" visible={visible} 
                 onHide={() => setVisible(false)} 
@@ -243,6 +303,18 @@ export const DataViewPedidos = () => {
                 rejectLabel="No" icon="pi pi-exclamation-triangle" 
                 accept={acceptDialog} reject={rejectDialog} 
                 draggable={false}
+            />
+
+            <ConfirmDialog group="declarative" visible={visibleDialogEliminar} 
+                onHide={() => setVisibleDialogEliminar(false)} 
+                message="Estas seguro de eliminar el pedido?" 
+                header="Confirmacion" acceptLabel="Sí" 
+                rejectLabel="No" icon="pi pi-exclamation-triangle" 
+                accept={acceptDialogEliminar} reject={rejectDialogEliminar} 
+                acceptClassName="p-button-danger"
+                draggable={false}
+                defaultFocus='reject'
+
             />
             
 

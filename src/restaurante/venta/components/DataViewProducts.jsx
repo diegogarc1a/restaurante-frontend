@@ -3,18 +3,23 @@ import { classNames } from "primereact/utils";
 import { Button } from "primereact/button";
 import { DataViewLayoutOptions, DataView } from "primereact/dataview";
 import { Badge } from "primereact/badge";
-import { useProductStore, useVentaStore } from "../../../hooks";
+import { useCategoryStore, useProductStore, useVentaStore } from "../../../hooks";
 import { DialogDetalleVenta } from "./DialogDetalleVenta";
 import { DataViewCart } from "./DataViewCart";
+import { RadioButton } from "primereact/radiobutton";
+
+const FiltroPorDefecto = {'id':0, 'nombre': 'Todo'};
 
 export const DataViewProducts = () => {
 
     const { products, setActiveProduct } = useProductStore();
+    const { categories } = useCategoryStore();
     const { openVentaModal, detalleVentas } = useVentaStore();
     const [layout, setLayout] = useState('grid');
     const [cartVisible, setCartVisible] = useState(false);
     const [productDetalle, setProductDetalle] = useState(null);
-
+    const [selectedCategory, setSelectedCategory] = useState(FiltroPorDefecto);
+    
 
     const onSelectProduct = (product) => {
         return () => {
@@ -23,6 +28,10 @@ export const DataViewProducts = () => {
         };
       };
     
+      const filterProducts = (productos) => {
+        if (selectedCategory.id === 0) return products;
+        return productos.filter((producto) => producto.categoria.nombre === selectedCategory.nombre);
+      };
 
     const gridItem = (product) => {
         return (
@@ -39,7 +48,7 @@ export const DataViewProducts = () => {
                         <div className="text-lg font-bold">{product.nombre}</div>
                     </div>
                     <div className="flex align-items-center justify-content-between">
-                        <span className="text-lg font-semibold">${product.precio}</span>
+                        <span className="text-lg font-semibold">${product.precio.toFixed(2)}</span>
                         <Button icon="pi pi-plus" className="p-button-rounded" onClick={onSelectProduct(product)}></Button>
                     </div>
                 </div>
@@ -60,6 +69,7 @@ export const DataViewProducts = () => {
 
     const header = () => {
         return (
+            <>
             <div className="flex justify-content-between p-1 bg-primary border-round m-2">
                 <div>
                     <p className="ml-2 text-center">Modulo de Ventas</p>
@@ -70,7 +80,27 @@ export const DataViewProducts = () => {
                         ></Badge>
                     </Button>
                 </div>
+                
             </div>
+            <div className="flex flex justify-content-center mt-3">
+            <div className="flex flex-wrap gap-3">
+            <div className="flex align-items-center">
+                    <RadioButton inputId="0" name="Todo" value={FiltroPorDefecto} onChange={(e) => setSelectedCategory(e.value)} checked={selectedCategory.id === 0} />
+                    <label htmlFor="0" className="ml-2">Todo</label>
+                </div>
+               {
+                categories.map((c) => {
+                    return (
+                        <div key={c.id} >
+                        <RadioButton inputId={c.id} name="category" value={c} onChange={(e) => setSelectedCategory(e.value)} checked={selectedCategory.id === c.id} />
+                        <label htmlFor={c.id} className="ml-2">{c.nombre}</label>
+                    </div>
+                    )
+                })
+               }
+            </div>
+        </div>
+            </>
         );
     };
 
@@ -78,7 +108,7 @@ export const DataViewProducts = () => {
     return (
         <div className="grid flex justify-content-center flex-wrap">
             <div className="col-12">
-            <DataView value={products} listTemplate={listTemplate} layout={layout} header={header()}/>
+            <DataView value={filterProducts(products)} listTemplate={listTemplate} layout={layout} header={header()}/>
             </div>
             <DialogDetalleVenta productoDetalle={productDetalle} />
             <DataViewCart cartVisible={cartVisible} setCartVisible={setCartVisible}/>

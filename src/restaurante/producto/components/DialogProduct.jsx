@@ -89,7 +89,7 @@ export const DialogProduct = () => {
       </Fragment>
     );
 
-    const tipos = ['Carne','Pollo'];
+    const tipos = ['Carne','Pollo','Bedida'];
 
     //Este se usa para subir imagen con le componente de PrimeReact
     // const onFileChange = (event) => {

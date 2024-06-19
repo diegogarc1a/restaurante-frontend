@@ -8,7 +8,7 @@ export const PedidoPage = () => {
    const { startLoadingVentas } = useVentaStore();
 
    useEffect(() => {
-    startLoadingVentas();
+    // startLoadingVentas();
   }, []);
 
 return (  

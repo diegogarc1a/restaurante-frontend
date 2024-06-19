@@ -20,13 +20,14 @@ export const DialogPago = ({ visible, setVisible }) => {
 
   const formik = useFormik({
     initialValues: initialActiveVenta,
+    validateOnChange: true,
     validate: (data) => {
       let errors = {};
-      if (data.recibido === null) {
+      if (data.recibido == null || data.recibido == 0) {
         errors.recibido = 'Debe proporcionar lo recibido';
       }
-      if (recibido !== null && recibido < activeVentaValues.preciototal) {
-        errors.recibido = 'Lo recibido debe ser mayor a lo gastado o igual';
+      if (recibido != null && recibido < activeVentaValues.preciototal) {
+        errors.recibido = 'Lo recibido debe ser mayor o igual a lo gastado';
       }
       return errors;
     },
@@ -41,6 +42,7 @@ export const DialogPago = ({ visible, setVisible }) => {
 
   const handleHide = () => {
     setVisible(false);
+    setRecibido(null);
     formik.resetForm();
   }
 
@@ -51,12 +53,12 @@ export const DialogPago = ({ visible, setVisible }) => {
 
   const onCalcularCambio = () => {
     let cambio = 0;
-    if (recibido !== null && activeVentaValues.preciototal !== null) {
+    if (recibido!== null && activeVentaValues.preciototal!== null) {
       cambio = recibido - activeVentaValues.preciototal;
-      return cambio;
+      return cambio.toFixed(2);
     }
-      cambio = recibido - activeVentaValues.preciototal;
-      return cambio;
+    cambio = recibido - activeVentaValues.preciototal;
+    return cambio.toFixed(2);
   }
 
   return (
@@ -79,10 +81,19 @@ export const DialogPago = ({ visible, setVisible }) => {
           {getFormErrorMessage('recibido')}
         </div>
         <div className="field col">
-          <label htmlFor="recibido" className='flex justify-content-left mb-2 font-bold'>
+          <label htmlFor="cambio" className='flex justify-content-left mb-2 font-bold'>
             Cambio
           </label>
-          <InputNumber value={onCalcularCambio()} size={5} disabled className="font-bold text-base text-color border-round appearance-none outline-none focus:border-primary w-full" id="cambio" name="cambio" inputId="currency-us" mode="currency" currency="USD" locale="en-US" />
+          <div
+            className="text-base text-color border-round appearance-none outline-none focus:border-primary w-full"
+            style={{
+              padding: '0.5rem',
+              backgroundColor: onCalcularCambio() < 0? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 128, 0, 0.2)',
+              color: onCalcularCambio() < 0? 'ed' : 'green'
+            }}
+          >
+            ${onCalcularCambio()}
+          </div>
         </div>
       </div>
       <div className="formgrid grid">

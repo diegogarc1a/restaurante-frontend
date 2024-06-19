@@ -145,7 +145,7 @@ export const DataViewCart = ({ cartVisible, setCartVisible }) => {
                 <Column field="producto.nombre" header="Producto" ></Column>
                 <Column field="cantidad" header="Cantidad" align={"center"} ></Column>
                 <Column field="descripcion" header="Descripcion" ></Column>
-                <Column header="Precio" body={priceBodyTemplate}  ></Column>
+                <Column header="Precio/U" body={priceBodyTemplate}  ></Column>
                 <Column body={actionBodyTemplate} align={"center"} exportable={false} ></Column>
 
             </DataTable>

@@ -9,8 +9,6 @@ import 'primeflex/primeflex.css';
 import 'primereact/resources/primereact.css';
 
 
-
-
 export const RestauranteApp = () => {
   return (
     

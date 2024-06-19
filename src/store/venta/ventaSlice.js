@@ -7,17 +7,18 @@ export const ventaSlice = createSlice({
         detalleVentas: [],
         activeVenta : null,
         isVentaModalOpen : false,
+        totalRecords : 0
     },
     reducers: {
         onSetActiveVenta: (state, { payload }) =>{
             state.activeVenta = payload;
         },
         onAddNewVenta: (state, { payload }) => {
-            
             //Para que el websocket no tenga problemas de duplicacion de muestra en pedidos
             const exists = state.ventas.some( dbVen => dbVen.id === payload.id );
             if ( !exists ){
             state.ventas.push( payload );
+            state.totalRecords = state.ventas.length;
             }
                 
             // state.ventas.push(payload);
@@ -25,19 +26,34 @@ export const ventaSlice = createSlice({
             state.activeVenta = null;
         },
         onUpdateVenta: (state, { payload }) => {
+            console.log(payload);
             state.ventas = state.ventas.map( venta => {
                 if( venta.id === payload.id ){
                     return payload;
                 }
                 return venta;
             } )
+
+             //Para que el websocket no tenga problemas de duplicacion de muestra en pedidos
+            const exists = state.ventas.some( dbVen => dbVen.id === payload.id );
+            if ( !exists ){
+                if(payload.estado === 'Proceso'){
+                    state.ventas.unshift( payload );
+                }else {
+                    state.ventas.unshift( payload );
+                }
+                state.totalRecords = state.ventas.length;
+            }
+            
             state.activeVenta = null;
         },
         onDeleteVenta: (state, { payload }) => {
             state.ventas = state.ventas.filter( ven => ven.id !== payload.id);
+            state.totalRecords = state.ventas.length;
             state.activeVenta = null;
         },
         onLoadVentas: (state, { payload = [] }) => {
+            state.ventas = [];
             state.isLoadingVentas = false;
             payload.forEach( ven => {
                 const exists = state.ventas.some( dbVen => dbVen.id === ven.id );
@@ -83,6 +99,9 @@ export const ventaSlice = createSlice({
         onCleanDetalleVenta: (state) => {
             state.detalleVentas = [];
         },
+        onTotalRecords: (state, { payload }) => {
+            state.totalRecords = payload;
+        }
     }
 });
 
@@ -100,5 +119,6 @@ export const {
     onOpenVentaModal,
     onCloseVentaModal,
     onCloseDetalleVentaModal,
-    onCleanDetalleVenta
+    onCleanDetalleVenta,
+    onTotalRecords
 } = ventaSlice.actions;

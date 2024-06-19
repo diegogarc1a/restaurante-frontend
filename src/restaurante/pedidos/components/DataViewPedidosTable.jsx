@@ -154,10 +154,11 @@ export const DataViewPedidosTable = () => {
                 className="col-12 p-1" stripedRows
                 tableStyle={{ minWidth: '35rem' }}
                 emptyMessage="No hay pedidos en proceso..."
+                
             >
                 <Column align={"center"} body={buttonPedidoFinalizado} />
                 <Column align={"center"} body={itemPedido} header="Detalle" />
-                <Column align={"center"} field="nombrecliente" header="Cliente" />
+                <Column align={"center"} field="nombrecliente" header="Cliente"/>
                 <Column align={"center"} field="fecha" header="Fecha" />
                 <Column align={"center"} field="preciototal" header="Precio Total" />
                 <Column align={"center"} body={severity} field="estado" header="Estado" />
