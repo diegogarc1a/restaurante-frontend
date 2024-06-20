@@ -69,14 +69,14 @@ export const DialogCategory = () => {
                       <label htmlFor="nombre" className={classNames('font-bold', { 'p-error': isFormFieldValid('nombre') })}>
                           Nombre*
                       </label>
-                      <InputText id="nombre" name="nombre" value={formik.values.nombre} onChange={formik.handleChange} autoFocus className={classNames({ 'p-invalid': isFormFieldValid('nombre') })} />
+                      <InputText id="nombre" name="nombre" autoComplete='off' value={formik.values.nombre} onChange={formik.handleChange} autoFocus className={classNames({ 'p-invalid': isFormFieldValid('nombre') })} />
                       {getFormErrorMessage('nombre')}
                   </div>
                   <div className="field">
                       <label htmlFor="descripcion" className={classNames('font-bold', { 'p-error': isFormFieldValid('descripcion') })}>
                           Descripción*
                       </label>
-                      <InputText id="descripcion" name="descripcion" value={formik.values.descripcion} onChange={formik.handleChange} className={classNames({ 'p-invalid': isFormFieldValid('descripcion') })} />
+                      <InputText id="descripcion" name="descripcion" autoComplete='off' value={formik.values.descripcion} onChange={formik.handleChange} className={classNames({ 'p-invalid': isFormFieldValid('descripcion') })} />
                       {getFormErrorMessage('descripcion')}
                   </div>
               </Dialog>

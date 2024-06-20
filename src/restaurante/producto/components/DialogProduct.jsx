@@ -113,6 +113,7 @@ export const DialogProduct = () => {
                         onChange={formik.handleChange} 
                         placeholder="Escriba el nombre" 
                         autoFocus 
+                        autoComplete='off'
                         className={classNames({ 'p-invalid': isFormFieldValid('nombre') })} 
                       />
                       {getFormErrorMessage('nombre')}
@@ -124,6 +125,7 @@ export const DialogProduct = () => {
                       <InputText id="descripcion" name="descripcion" 
                         value={formik.values.descripcion} 
                         onChange={formik.handleChange}  
+                        autoComplete='off'
                         className={classNames({ 'p-invalid': isFormFieldValid('descripcion') })} 
                       />
                       {getFormErrorMessage('descripcion')}
@@ -164,8 +166,10 @@ export const DialogProduct = () => {
                           inputId="currency-us" 
                           value={formik.values.precio} 
                           onValueChange={formik.handleChange} 
+                          autoCapitalize=""
                           mode="currency" currency="USD" locale="en-US"
                           className={classNames({ 'p-invalid': isFormFieldValid('precio') })}
+                        
                         />
                         {getFormErrorMessage('precio')}
                     </div>

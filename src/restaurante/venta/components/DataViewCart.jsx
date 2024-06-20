@@ -133,7 +133,7 @@ export const DataViewCart = ({ cartVisible, setCartVisible }) => {
                           Nombre de Cliente: *
                 </label>
                 <InputText className={classNames('text-base text-color surface-overlay p-2 border-1 border-solid border-round appearance-none outline-none focus:border-primary w-full', { 'p-invalid': isFormFieldValid('nombrecliente') })}
-                id="nombrecliente" name="nombrecliente" value={formik.values.nombrecliente} onChange={formik.handleChange} placeholder="Escriba nombre"  />
+                id="nombrecliente" name="nombrecliente" value={formik.values.nombrecliente} onChange={formik.handleChange} placeholder="Escriba nombre" autoComplete='off'/>
                 {getFormErrorMessage('nombrecliente')}
                 
             </div>   

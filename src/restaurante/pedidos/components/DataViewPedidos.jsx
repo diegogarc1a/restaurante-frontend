@@ -159,7 +159,9 @@ export const DataViewPedidos = () => {
                             <i className="pi pi-user"></i>
                             <span className="font-semibold">{pedido.nombrecliente}</span>
                         </div>
-                            <span className="font-semibold">{format(parseISO(pedido.fecha.replace(/(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})/, '$3-$2-$1T$4:$5:$6')), 'cccc, dd MMMM y, h:mm:ss a', { locale: es })}</span>
+                            <span className="font-semibold">
+                                {pedido.fecha ? format(parseISO(pedido.fecha.replace(/(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})/, '$3-$2-$1T$4:$5:$6')), 'cccc, dd MMMM y, h:mm:ss a', { locale: es }) : ''}
+                            </span>
                             <div>
                             <Tag severity={ (pedido.estado === "Proceso") ? "danger" : "success" } rounded value={pedido.estado} icon="pi pi-info-circle"></Tag>
                     

@@ -49,7 +49,7 @@ export const ventaSlice = createSlice({
         },
         onDeleteVenta: (state, { payload }) => {
             state.ventas = state.ventas.filter( ven => ven.id !== payload.id);
-            state.totalRecords = state.ventas.length;
+            // state.totalRecords = state.ventas.length;
             state.activeVenta = null;
         },
         onLoadVentas: (state, { payload = [] }) => {
