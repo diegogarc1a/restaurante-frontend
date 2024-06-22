@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import { restauranteApi } from "../api";
-import { onAddNewDetalleVenta, onAddNewVenta, onCleanDetalleVenta, onCloseDetalleVentaModal, onCloseVentaModal, onDeleteDetalleVenta, onDeleteVenta, onLoadVentas, onOpenVentaModal, onSetActiveVenta, onTotalRecords, onUpdateDetalleVenta, onUpdateVenta } from "../store/venta/ventaSlice";
+import { onAddNewDetalleVenta, onAddNewVenta, onCleanDetalleVenta, onCloseDetalleVentaModal, onCloseVentaModal, onDeleteDetalleVenta, onDeleteVenta, onLoadVentas, onOpenVentaModal, onSetActiveVenta, onSetPageSelected, onTotalRecords, onUpdateDetalleVenta, onUpdateVenta } from "../store/venta/ventaSlice";
 import Swal from "sweetalert2";
 
 export const useVentaStore = () => {
     const dispatch = useDispatch();
-    const { ventas, detalleVentas, activeVenta, isLoadingVentas, isVentaModalOpen, totalRecords } = useSelector( state => state.venta );
+    const { ventas, detalleVentas, activeVenta, isLoadingVentas, isVentaModalOpen, totalRecords, pageSelected } = useSelector( state => state.venta );
 
     const startSavingVenta = async( venta ) => {
         try {
@@ -78,18 +78,30 @@ export const useVentaStore = () => {
       }
     }
 
+    const startLoadingVentas = async(page=0, size=100,estado) => {
+      try {
+          const { data } = await restauranteApi.get(`ventas/lista?page=${page}&size=${size}&estado=${estado}&sortDirection=${estado === 'Proceso' ? 'asc' : 'desc' }`);
+          dispatch( onLoadVentas(data.content));
+          if (estado === 'Pagado') dispatch( onTotalRecords(data.totalElements));
 
-    const startLoadingVentas = async(page=0,size=5,estado='Proceso') => {
-        try {
-            const { data } = await restauranteApi.get(`ventas/lista?page=${page}&size=${size}&estado=${estado}&sortDirection=${estado === 'Proceso' ? 'asc' : 'desc' }`);
-            dispatch( onLoadVentas(data.content));
-            dispatch( onTotalRecords(data.totalElements));
+      } catch (error) {
+          console.log("Error cargando ventas");
+          console.log(error);
+      }
+  }
 
-        } catch (error) {
-            console.log("Error cargando ventas");
-            console.log(error);
-        }
-    }
+
+    // const startLoadingVentas = async(page=0,size=5,estado='Proceso') => {
+    //     try {
+    //         const { data } = await restauranteApi.get(`ventas/lista?page=${page}&size=${size}&estado=${estado}&sortDirection=${estado === 'Proceso' ? 'asc' : 'desc' }`);
+    //         dispatch( onLoadVentas(data.content));
+    //         dispatch( onTotalRecords(data.totalElements));
+
+    //     } catch (error) {
+    //         console.log("Error cargando ventas");
+    //         console.log(error);
+    //     }
+    // }
 
     const startDeletingVenta = async( venta ) => {
         try {
@@ -127,6 +139,10 @@ export const useVentaStore = () => {
 
     const setActiveVenta = ( venta ) => {
         dispatch( onSetActiveVenta( venta ) );
+    }
+
+    const setPageSelected = ( page ) => {
+      dispatch( onSetPageSelected( page ) )
     }
 
     const openVentaModal = () => {
@@ -167,6 +183,7 @@ export const useVentaStore = () => {
     isVentaModalOpen,
     detalleVentas,
     totalRecords,
+    pageSelected,
 
 
     //*Methods
@@ -188,6 +205,7 @@ export const useVentaStore = () => {
     cleanDetalleVenta,
     getEstadisticas,
     getVentasPorProducto,
-    getVentasPorSemana
+    getVentasPorSemana,
+    setPageSelected
   }
 }

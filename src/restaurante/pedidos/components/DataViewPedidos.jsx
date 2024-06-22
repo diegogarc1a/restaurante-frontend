@@ -1,7 +1,7 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import { compareAsc, compareDesc, format, parse, parseISO  } from "date-fns";
+import { format, parseISO  } from "date-fns";
 import { es } from 'date-fns/locale';
 import { useVentaStore } from "../../../hooks";
 import { DataView } from "primereact/dataview";
@@ -11,37 +11,30 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
 import { ConfirmDialog } from "primereact/confirmdialog";
-import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { Checkbox } from "primereact/checkbox";
 import { DialogPago } from "./DialogPago";
 import { DialogEditPedido } from "./DialogEditPedido";
-import { Paginator } from "primereact/paginator";
+import { Dropdown } from "primereact/dropdown";
 
 
-export const DataViewPedidos = () => {
+export const DataViewPedidos = ({estado}) => {
     const [visible, setVisible] = useState(false);
     const [visibleDialogEliminar, setVisibleDialogEliminar] = useState(false);
     const [visiblePago, setVisiblePago] = useState(false);
     const [visibleEditPedido, setVisibleEditPedido] = useState(false);
-    const { ventas, startLoadingVentas, startDeletingVenta, addVentaWS, updateVentaWS, eliminarVentaWS, pedidoFinalizado, cambiarEstadoDv, setActiveVenta, addDetalleVenta, totalRecords } = useVentaStore();
+    const { ventas, startDeletingVenta, addVentaWS, updateVentaWS, eliminarVentaWS, pedidoFinalizado, cambiarEstadoDv, setActiveVenta, addDetalleVenta, totalRecords } = useVentaStore();
     const [pedido, setPedido] = useState(null);
-    const [selectedState, setSelectedState] = useState('Proceso');
-    const [page, setPage] = useState(0);
-    const [size, setSize] = useState(5);
-    const [first, setFirst] = useState(0);
+
     const toast = useRef(null);
     
     
     let notificationSound = new Audio('./sounds/beep.mp3'); 
 
-    const states = [
-        { label: 'Proceso', value: 'Proceso'},
-        { label: 'Terminado', value: 'Terminado' },
-        { label: 'Pagado', value: 'Pagado' },
-      ];
     
       const [stompClient, setStompClient] = useState(null);
+
+
 
       useEffect(() => {
         const socket = new SockJS(`${import.meta.env.VITE_API_URL}ws`);
@@ -59,6 +52,7 @@ export const DataViewPedidos = () => {
             // console.log("Message received: " + message.body);
             const data = JSON.parse(message.body);
             updateVentaWS(data);
+
         });
         client.subscribe("/topic/eliminarventas", (message) => {
             eliminarVentaWS(JSON.parse(message.body));
@@ -76,17 +70,10 @@ export const DataViewPedidos = () => {
         };
     }, []);
         
+   
 
-    useEffect(() => {
-        startLoadingVentas(page,size, selectedState);
-    }, [page, selectedState, size]);
-
-    const onFilterVentas = (state) => {
-        setSelectedState(state.value);
-      };
-      
       const filterVentas = (ventas) => {
-        return ventas.filter((venta) => venta.estado === selectedState);
+        return ventas.filter((venta) => venta.estado === estado);
       };
 
     
@@ -225,52 +212,28 @@ export const DataViewPedidos = () => {
             </div>
         );
     };
-
-    const onPageChange = (event) => {
-        setFirst(event.first);
-        setPage(event.page);
-        setSize(event.rows);
-    };
    
     const listTemplate = (pedidos) => {
         return <div className="grid grid-nogutter flex flex-wrap justify-content-center">{pedidos.map((pedido, index) => gridItem(pedido, index))}</div>;
     };
 
-    const PaginatorCustom = () => {
-        return (
-            filterVentas(ventas) != '' && (
-                <Paginator first={first} rows={size} totalRecords={totalRecords} rowsPerPageOptions={[5 ,10, 20, 30]} onPageChange={onPageChange}/>            
-             )
-              
-        )
-    }
 
     const header = () => {
         return (
         <div>
-            <Dropdown value={selectedState} options={states} optionLabel="label" onChange={onFilterVentas} placeholder="Seleccione estado" className="w-full md:w-14rem" 
-            />
+          
             <div className="flex justify-content-center m-2">
                 <div className="ml-2">
                     {
-                        filterVentas(ventas) == '' && <span>No hay pedidos disponibles en {selectedState}</span> 
+                        filterVentas(ventas) == '' ? <span>No hay pedidos disponibles en {estado}</span> 
+                        : <div className="ml-2"> Pedidos en {estado} </div>
                     }
                 </div>
             </div>
-                <div>
-                <PaginatorCustom/>
-                </div>
+            
         </div>
         );
     };
-
-    const footer = () => {
-        return (
-            <div>
-                <PaginatorCustom/>
-            </div>
-        )
-    }
 
 
     //Confirmacion al marcar pedido como Finalizado
@@ -291,12 +254,43 @@ export const DataViewPedidos = () => {
         console.log("Rechazado")
     }
 
+
+    const templatePaginator = {
+        layout: 'PrevPageLink PageLinks NextPageLink CurrentPageReport RowsPerPageDropdown',
+        RowsPerPageDropdown: (options) => {
+            const dropdownOptions = [
+                { label: 10, value: 10 },
+                { label: 20, value: 20 },
+                { label: 30, value: 20 },
+                { label: 120, value: 120 }
+            ];
+
+            return (
+                <React.Fragment>
+                    <span className="mx-1" style={{ color: 'var(--text-color)', userSelect: 'none' }}>
+                        Items por página:{' '}
+                    </span>
+                    <Dropdown value={options.value} options={dropdownOptions} onChange={options.onChange} />
+                </React.Fragment>
+            );
+        },
+        CurrentPageReport: (options) => {
+            return (
+                <span style={{ color: 'var(--text-color)', userSelect: 'none', width: '120px', textAlign: 'center' }}>
+                    {options.first} - {options.last} de {options.totalRecords}
+                </span>
+            );
+        }
+    };
+
+
     return (
         <div className="grid flex justify-content-center flex-wrap">
             <Toast ref={toast} position="bottom-right"/>
             <div className="col-12">
 
-            <DataView value={filterVentas(ventas)} listTemplate={listTemplate} header={header()} footer={footer()} emptyMessage="No hay pedidos disponibles"
+            <DataView value={filterVentas(ventas)} listTemplate={listTemplate} header={header()} emptyMessage="No hay pedidos disponibles"
+            paginator paginatorTemplate={templatePaginator} rows={10} paginatorPosition="both" totalRecords={filterVentas(ventas).lenght}
             />
             <ConfirmDialog group="declarative" visible={visible} 
                 onHide={() => setVisible(false)} 

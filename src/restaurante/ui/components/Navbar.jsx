@@ -42,8 +42,27 @@ const items = [
     {
         label: 'Pedidos',
         icon: 'pi pi-shopping-cart',
-        path: '/pedido',
-        template: itemRenderer
+        items: [
+            {
+                label: 'En proceso',
+                icon: 'pi pi-spinner',
+                path: '/pedidop',
+                template: itemRenderer
+            },
+            {
+                label: 'Terminados',
+                icon: 'pi pi-check-circle',
+                path: '/pedidot',
+                template: itemRenderer
+            },
+            {
+                label: 'Pagados',
+                icon: 'pi pi-dollar',
+                path: '/pedidopa',
+                template: itemRenderer
+            },
+        ]
+        
     }
 ];
 

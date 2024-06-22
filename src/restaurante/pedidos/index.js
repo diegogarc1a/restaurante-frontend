@@ -1,2 +1,6 @@
-export * from './pages/PedidoPage'
+export * from './pages/PedidoProcesoPage'
+export * from './pages/PedidoTerminadoPage'
+export * from './pages/PedidoPagadoPage'
+export * from './components/DataViewPedidosPagado'
 export * from './components/DataViewPedidos'
+export * from './components/NavigationDropdown'

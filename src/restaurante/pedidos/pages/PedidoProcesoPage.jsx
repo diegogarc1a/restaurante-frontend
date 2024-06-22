@@ -1,17 +1,20 @@
 import { useEffect } from "react";
 import { useVentaStore } from "../../../hooks"
 import { DataViewPedidos } from "../components/DataViewPedidos";
-import { DataViewPedidosTable } from "../components/DataViewPedidosTable";
+import { NavigationDropdown } from "../components/NavigationDropdown";
 
-export const PedidoPage = () => {
+export const PedidoProcesoPage = () => {
   
    const { startLoadingVentas } = useVentaStore();
 
    useEffect(() => {
-    // startLoadingVentas();
+    startLoadingVentas('','','Proceso');
   }, []);
 
 return (  
-    <DataViewPedidos/>
+  <>
+    <NavigationDropdown/>
+    <DataViewPedidos estado='Proceso'/>
+  </>
   )
 }

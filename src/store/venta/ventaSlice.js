@@ -7,7 +7,8 @@ export const ventaSlice = createSlice({
         detalleVentas: [],
         activeVenta : null,
         isVentaModalOpen : false,
-        totalRecords : 0
+        totalRecords : 0 ,
+        pageSelected: 0
     },
     reducers: {
         onSetActiveVenta: (state, { payload }) =>{
@@ -26,7 +27,6 @@ export const ventaSlice = createSlice({
             state.activeVenta = null;
         },
         onUpdateVenta: (state, { payload }) => {
-            console.log(payload);
             state.ventas = state.ventas.map( venta => {
                 if( venta.id === payload.id ){
                     return payload;
@@ -38,7 +38,7 @@ export const ventaSlice = createSlice({
             const exists = state.ventas.some( dbVen => dbVen.id === payload.id );
             if ( !exists ){
                 if(payload.estado === 'Proceso'){
-                    state.ventas.unshift( payload );
+                    state.ventas.push( payload );
                 }else {
                     state.ventas.unshift( payload );
                 }
@@ -101,7 +101,11 @@ export const ventaSlice = createSlice({
         },
         onTotalRecords: (state, { payload }) => {
             state.totalRecords = payload;
-        }
+        },
+        onSetPageSelected: (state, { payload }) => {
+            state.pageSelected = payload;
+        },
+
     }
 });
 
@@ -120,5 +124,6 @@ export const {
     onCloseVentaModal,
     onCloseDetalleVentaModal,
     onCleanDetalleVenta,
-    onTotalRecords
+    onTotalRecords,
+    onSetPageSelected
 } = ventaSlice.actions;
