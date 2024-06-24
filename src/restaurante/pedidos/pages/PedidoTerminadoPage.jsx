@@ -9,7 +9,7 @@ export const PedidoTerminadoPage = () => {
 
 
   useEffect(() => {
-    startLoadingVentas('','','Terminado');
+    startLoadingVentas('',100,'Terminado');
 }, []);
 
   return (

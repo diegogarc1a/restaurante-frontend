@@ -1,0 +1,3 @@
+  .p-menuitem.p-focus > .p-menuitem-content:not(:hover) {
+    background: transparent !important;
+}

@@ -1,10 +1,10 @@
-import { Avatar } from "primereact/avatar";
+import './Navbar.module.css'
 import { Badge } from "primereact/badge";
-import { InputText } from "primereact/inputtext";
 import { Menubar } from "primereact/menubar";
 import { Link } from "react-router-dom";
 
 export const Navbar = () => {
+
     
   const itemRenderer = (item) => (
     <Link to={item.path} className="flex align-items-center p-menuitem-link">
@@ -66,17 +66,14 @@ const items = [
     }
 ];
 
-// const start = <img alt="logo" src="https://primefaces.org/cdn/primereact/images/logo.png" height="40" className="mr-2"></img>;
-const start = <img alt="logo" src="https://primefaces.org/cdn/primereact/images/logo.png" height="40" className="mr-2"></img>;
-const end = (
-    <div className="flex align-items-center gap-2">
-        <InputText placeholder="Search" type="text" className="w-8rem sm:w-auto" />
-        <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" />
-    </div>
-);
+const start = <img alt="logo" src="public/logo2.png" height="50" className="mr-2"></img>;
 
 return (
-        <Menubar model={items} start={start} end={end}/>
+        <Menubar 
+            model={items} 
+            start={start} 
+            style={{ backgroundColor: '#E9B712' }}
+        />
 )
 }
      
