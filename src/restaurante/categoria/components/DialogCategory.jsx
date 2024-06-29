@@ -63,7 +63,7 @@ export const DialogCategory = () => {
    
     return (
               <Dialog header={activeCategory ? 'Modificar Categoria' : 'Agregar Categoria'} visible={isCategoryModalOpen} onHide={onCloseDialog} draggable={false} footer={categoryDialogFooter}
-                  style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid"
+                  style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid" blockScroll='true'
               >
                    <div className="field">
                       <label htmlFor="nombre" className={classNames('font-bold', { 'p-error': isFormFieldValid('nombre') })}>

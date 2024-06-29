@@ -63,7 +63,7 @@ export const DialogPago = ({ visible, setVisible }) => {
 
   return (
     <Dialog header='Pagar pedido' visible={visible} draggable={false} onHide={ handleHide }
-      style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid"
+      style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid" blockScroll='true'
     >
       <div className="formgrid grid">
         <div className="field col">

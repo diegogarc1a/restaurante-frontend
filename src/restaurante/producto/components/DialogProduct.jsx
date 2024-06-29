@@ -102,7 +102,7 @@ export const DialogProduct = () => {
    
     return (
               <Dialog header={activeProduct ? 'Modificar Producto' : 'Agregar Producto'} visible={isProductModalOpen} onHide={onCloseDialog} draggable={false} footer={productDialogFooter}
-                  style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid"
+                  style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid" blockScroll='true'
               >
                    <div className="field">
                       <label htmlFor="nombre" className="font-bold">

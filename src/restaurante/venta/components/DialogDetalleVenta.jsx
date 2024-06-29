@@ -82,7 +82,7 @@ export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit, toastRef
    
     return (
               <Dialog header={'Agregar Producto'} visible={isVentaModalOpen} onHide={onCloseDialog} draggable={false} footer={ventaDialogFooter}
-                  style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid"
+                  style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid" blockScroll='true'
               >
                     <div className="field text-center">
                       <label htmlFor="producto" className='font-bold'>

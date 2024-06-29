@@ -150,7 +150,7 @@ export const DataViewCart = ({ cartVisible, setCartVisible, toastRef={toastRef} 
 
             </DataTable>
              <div className="flex flex-column mt-2">
-                <div>
+                {/* <div>
                     <label htmlFor="item" className='flex justify-content-left mb-2 font-bold'>
                         ¿Pagar ya?
                     </label>
@@ -182,7 +182,7 @@ export const DataViewCart = ({ cartVisible, setCartVisible, toastRef={toastRef} 
                         : ''
                     }
                     </div>
-                </div>
+                </div> */}
                 <Button className="flex align-items-center justify-content-center font-bold border-round m-2" 
                     type="submit" onClick={formik.handleSubmit} severity="success"
                 >
