@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { classNames } from "primereact/utils";
 import { Button } from "primereact/button";
 import { DataViewLayoutOptions, DataView } from "primereact/dataview";
@@ -7,11 +7,13 @@ import { useCategoryStore, useProductStore, useVentaStore } from "../../../hooks
 import { DialogDetalleVenta } from "./DialogDetalleVenta";
 import { DataViewCart } from "./DataViewCart";
 import { RadioButton } from "primereact/radiobutton";
+import { Toast } from "primereact/toast";
 
 const FiltroPorDefecto = {'id':0, 'nombre': 'Todo'};
 
 export const DataViewProducts = () => {
 
+    const toastRef = useRef(null);
     const { products, setActiveProduct } = useProductStore();
     const { categories } = useCategoryStore();
     const { openVentaModal, detalleVentas } = useVentaStore();
@@ -44,7 +46,18 @@ export const DataViewProducts = () => {
                         </div>
                     </div>
                     <div className="flex flex-column align-items-center gap-3 py-5">
-                        <img className="w-9 shadow-2 border-round" src={`${import.meta.env.VITE_API_URL}recursos/${product.foto}`} alt={product.descripcion} width="200" />
+                        {/* <img className="w-9 shadow-2 border-round" src={`${import.meta.env.VITE_API_URL}recursos/${product.foto}`} alt={product.descripcion} width="200" /> */}
+                        <img
+                        className="w-9 shadow-2 border-round"
+                        src={`${import.meta.env.VITE_API_URL}recursos/${product.foto}`}
+                        alt={product.descripcion}
+                        style={{
+                            width: '100%', // ancho del contenedor
+                            height: 'auto', // alto automático para mantener proporción
+                            objectFit: 'contain', // ajusta la imagen al contenedor sin recortar
+                            maxHeight: '150px', // alto máximo para evitar que la imagen sea demasiado alta
+                        }}
+                        />
                         <div className="text-lg font-bold">{product.nombre}</div>
                     </div>
                     <div className="flex align-items-center justify-content-between">
@@ -107,11 +120,12 @@ export const DataViewProducts = () => {
 
     return (
         <div className="grid flex justify-content-center flex-wrap">
+            <Toast ref={toastRef} position="bottom-right" />
             <div className="col-12">
             <DataView value={filterProducts(products)} listTemplate={listTemplate} layout={layout} header={header()}/>
             </div>
-            <DialogDetalleVenta productoDetalle={productDetalle} />
-            <DataViewCart cartVisible={cartVisible} setCartVisible={setCartVisible}/>
+            <DialogDetalleVenta productoDetalle={productDetalle} toastRef={toastRef} />
+            <DataViewCart cartVisible={cartVisible} setCartVisible={setCartVisible} toastRef={toastRef}/>
         </div>
     )
 }

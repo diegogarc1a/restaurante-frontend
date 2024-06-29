@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useState } from "react";
 import { useVentaStore } from "../../../hooks";
 import { Button } from "primereact/button";
 import { Sidebar } from "primereact/sidebar"
@@ -22,7 +22,7 @@ const venta = {
     listaDetalleVenta : {},
 }
 
-export const DataViewCart = ({ cartVisible, setCartVisible }) => {
+export const DataViewCart = ({ cartVisible, setCartVisible, toastRef={toastRef} }) => {
     const { detalleVentas, startSavingVenta, openVentaModal, deleteDetalleVenta } = useVentaStore();
     const [detalleVentaEdit, setDetalleVentaEdit] = useState(null);
     const options = ['No', 'Sí'];
@@ -127,7 +127,7 @@ export const DataViewCart = ({ cartVisible, setCartVisible }) => {
     );
 
     return (
-        <Sidebar visible={cartVisible} onHide={() => setCartVisible(false)} position="right" className="w-full md:w-30rem lg:w-30rem">
+        <Sidebar visible={cartVisible} onHide={() => setCartVisible(false)} position="right" className="w-full md:w-30rem lg:w-30rem" blockScroll='true'>
             <div className="field">
                 <label htmlFor="nombrecliente" className={classNames('font-bold', { 'p-error': isFormFieldValid('nombrecliente') })}>
                           Nombre de Cliente: *
@@ -189,7 +189,7 @@ export const DataViewCart = ({ cartVisible, setCartVisible }) => {
                     Enviar pedido
                 </Button>
              </div>
-             <DialogDetalleVenta detalleVentaEdit={detalleVentaEdit} />
+             <DialogDetalleVenta detalleVentaEdit={detalleVentaEdit} toastRef={toastRef}/>
         </Sidebar>
     )
 }

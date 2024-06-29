@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { restauranteApi } from "../api";
-import { onAddNewDetalleVenta, onAddNewVenta, onCleanDetalleVenta, onCloseDetalleVentaModal, onCloseVentaModal, onDeleteDetalleVenta, onDeleteVenta, onLoadVentas, onOpenVentaModal, onSetActiveVenta, onSetPageSelected, onTotalRecords, onUpdateDetalleVenta, onUpdateVenta } from "../store/venta/ventaSlice";
+import { onAddNewDetalleVenta, onAddNewVenta, onCharge, onCleanDetalleVenta, onCloseDetalleVentaModal, onCloseVentaModal, onDeleteDetalleVenta, onDeleteVenta, onLoadVentas, onOpenVentaModal, onSetActiveVenta, onSetPageSelected, onTotalRecords, onUpdateDetalleVenta, onUpdateVenta } from "../store/venta/ventaSlice";
 import Swal from "sweetalert2";
 
 export const useVentaStore = () => {
@@ -12,14 +12,14 @@ export const useVentaStore = () => {
 
           if( venta.id ){
             //Actualizando
+            Swal.showLoading()
             const {data} = await restauranteApi.put("ventas/", venta);
             dispatch( onUpdateVenta({...data}) );
             Swal.fire('Exito',"Venta modificada", "success");
             return;
           }
-          
-          console.log(venta);
 
+          Swal.showLoading()
           const { data } = await restauranteApi.post("ventas/", venta);
           dispatch( onAddNewVenta({...venta, id: data.id}) );
           Swal.fire('Exito',"Venta guardada", "success");
@@ -32,6 +32,8 @@ export const useVentaStore = () => {
     const pedidoFinalizado = async( venta ) => {
       if( venta.id ){
         //Actualizando
+         Swal.showLoading()
+       
         const { data } = await restauranteApi.patch("ventas/finalizarVenta", venta);
         console.log(data);
         dispatch( onUpdateVenta({...data }) );
@@ -42,21 +44,17 @@ export const useVentaStore = () => {
 
     const pagarPedido = async( id, cantidad ) => {
       try {
-        // Create a new FormData object
         const formData = new FormData();
     
-        // Add the id and cantidad to the form-data
         formData.append('id', id);
         formData.append('cantidad', cantidad);
-    
-        // Send the form-data request
+
+         Swal.showLoading()
         const { data } = await restauranteApi.patch("ventas/pagarVenta", formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         });
-
-        console.log(data);
 
         await dispatch( onUpdateVenta({...data }) );
         
@@ -80,6 +78,7 @@ export const useVentaStore = () => {
 
     const startLoadingVentas = async(page=0, size=100,estado) => {
       try {
+         dispatch( onCharge(true) );
           const { data } = await restauranteApi.get(`ventas/lista?page=${page}&size=${size}&estado=${estado}&sortDirection=${estado === 'Proceso' ? 'asc' : 'desc' }`);
           dispatch( onLoadVentas(data.content));
           if (estado === 'Pagado') dispatch( onTotalRecords(data.totalElements));
@@ -90,21 +89,9 @@ export const useVentaStore = () => {
       }
   }
 
-
-    // const startLoadingVentas = async(page=0,size=5,estado='Proceso') => {
-    //     try {
-    //         const { data } = await restauranteApi.get(`ventas/lista?page=${page}&size=${size}&estado=${estado}&sortDirection=${estado === 'Proceso' ? 'asc' : 'desc' }`);
-    //         dispatch( onLoadVentas(data.content));
-    //         dispatch( onTotalRecords(data.totalElements));
-
-    //     } catch (error) {
-    //         console.log("Error cargando ventas");
-    //         console.log(error);
-    //     }
-    // }
-
     const startDeletingVenta = async( venta ) => {
         try {
+          Swal.showLoading()
           await restauranteApi.delete(`ventas/${venta.id}`);
           dispatch( onDeleteVenta( venta ) );
           Swal.fire('Exito',"Venta eliminada", "success");
@@ -124,12 +111,15 @@ export const useVentaStore = () => {
         dispatch( onDeleteVenta(venta) );
       }
 
-    const addDetalleVenta = ( detalleVenta ) => {
+    const addDetalleVenta = ( detalleVenta, toastRef ) => {
         if(detalleVenta.index >= 0){
           dispatch( onUpdateDetalleVenta( detalleVenta ) );
+          console.log("Entro")
+          toastRef &&  toastRef.current.show({ severity: 'success', detail: 'Producto modificado con exito' });
           return;
         }
-        dispatch( onAddNewDetalleVenta( detalleVenta ) );
+        dispatch( onAddNewDetalleVenta( detalleVenta ) ); 
+        toastRef &&  toastRef.current.show({ severity: 'success', detail: 'Producto agregado con exito' });
     }
 
     const deleteDetalleVenta = ( detalleVenta, rowIndex ) => {

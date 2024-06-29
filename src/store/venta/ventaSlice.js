@@ -81,10 +81,8 @@ export const ventaSlice = createSlice({
         onUpdateDetalleVenta: (state, { payload }) => {
             state.detalleVentas[payload.index] = payload;
           },
-        onLogoutVenta: ( state ) => {
-            state.isLoadingVentas= true,
-            state.ventas= [],
-            state.activeVenta= null
+        onCharge: ( state, { payload } ) => {
+            state.isLoadingVentas= payload;
         }
         ,onOpenVentaModal: ( state ) => {
             state.isVentaModalOpen = true;
@@ -119,7 +117,7 @@ export const {
     onAddNewDetalleVenta,
     onDeleteDetalleVenta,
     onUpdateDetalleVenta,
-    onLogoutVenta,
+    onCharge,
     onOpenVentaModal,
     onCloseVentaModal,
     onCloseDetalleVentaModal,

@@ -2,15 +2,18 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog"
 import { useCategoryStore, useProductStore, useVentaStore } from "../../../hooks";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
 import { Button } from "primereact/button";
 import { DialogDetalleVenta } from "../../venta/components/DialogDetalleVenta";
 import { DialogDataViewProducts } from "./DialogDataViewProducts";
 import Swal from "sweetalert2";
+import { Toast } from "primereact/toast";
 
 export const DialogEditPedido = ({ visible, setVisible }) => {
+
+    const toastRef = useRef(null);
     const { activeVenta, openVentaModal, detalleVentas, deleteDetalleVenta, cleanDetalleVenta, startSavingVenta } = useVentaStore();
     const [ventaActiva, setVentaActiva] = useState([]);
     const [detalleVentaEdit, setDetalleVentaEdit] = useState(null);
@@ -34,7 +37,6 @@ export const DialogEditPedido = ({ visible, setVisible }) => {
     const onSubmit = () => {
         const ventaGuardar = {...activeVenta};
         ventaGuardar.listaDetalleVenta = detalleVentas;
-        console.log(detalleVentas);
         if(detalleVentas == ''){
             Swal.fire('Error','Carrito no puede estar vacio', "warning")
             setVisible(false);
@@ -132,7 +134,7 @@ export const DialogEditPedido = ({ visible, setVisible }) => {
   return (
     <Dialog header='Editar pedido' visible={visible} draggable={false} onHide={handleHide} blockScroll='true'
     style={{ width: '50rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} modal className="p-fluid">
-        
+            <Toast ref={toastRef} position="bottom-right" />
         <div className="flex">
             <Button className="flex align-items-center justify-content-center font-bold border-round m-2"
                 type="button" severity="info" icon="pi pi-plus" label="Agregar Productos" onClick={onShowDialogDataViewProducts}
@@ -161,8 +163,8 @@ export const DialogEditPedido = ({ visible, setVisible }) => {
                 
             </Button>
         </div>
-            <DialogDetalleVenta detalleVentaEdit={detalleVentaEdit} />
-            <DialogDataViewProducts visible={visibleDialogDataViewProducts} setVisible={setVisibleDialogDataViewProducts} />
+            <DialogDetalleVenta detalleVentaEdit={detalleVentaEdit} toastRef={toastRef}/>
+            <DialogDataViewProducts visible={visibleDialogDataViewProducts} setVisible={setVisibleDialogDataViewProducts}/>
     </Dialog>
   )
 }

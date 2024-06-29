@@ -16,6 +16,7 @@ import { Checkbox } from "primereact/checkbox";
 import { DialogPago } from "./DialogPago";
 import { DialogEditPedido } from "./DialogEditPedido";
 import { Dropdown } from "primereact/dropdown";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 
 export const DataViewPedidos = ({estado}) => {
@@ -23,7 +24,7 @@ export const DataViewPedidos = ({estado}) => {
     const [visibleDialogEliminar, setVisibleDialogEliminar] = useState(false);
     const [visiblePago, setVisiblePago] = useState(false);
     const [visibleEditPedido, setVisibleEditPedido] = useState(false);
-    const { ventas, startDeletingVenta, addVentaWS, updateVentaWS, eliminarVentaWS, pedidoFinalizado, cambiarEstadoDv, setActiveVenta, addDetalleVenta, totalRecords } = useVentaStore();
+    const { isLoadingVentas, ventas, startDeletingVenta, addVentaWS, updateVentaWS, eliminarVentaWS, pedidoFinalizado, cambiarEstadoDv, setActiveVenta, addDetalleVenta, totalRecords } = useVentaStore();
     const [pedido, setPedido] = useState(null);
 
     const toast = useRef(null);
@@ -225,9 +226,16 @@ export const DataViewPedidos = ({estado}) => {
             <div className="flex justify-content-center m-2">
                 <div className="ml-2">
                     {
-                        filterVentas(ventas) == '' ? <span>No hay pedidos disponibles en {estado}</span> 
+                        isLoadingVentas === true 
+                        ?  <ProgressSpinner style={{width: '50px', height: '50px'}} strokeWidth="8" fill="var(--surface-ground)" aria-label="Loading" title="Load" />
+                        : filterVentas(ventas) == '' ? <span>No hay pedidos disponibles en {estado}</span> 
                         : <div className="ml-2"> Pedidos en {estado} </div>
                     }
+
+                    {/* {
+                        filterVentas(ventas) == '' ? <span>No hay pedidos disponibles en {estado}</span> 
+                        : <div className="ml-2"> Pedidos en {estado} </div>
+                    } */}
                 </div>
             </div>
             
@@ -248,6 +256,7 @@ export const DataViewPedidos = ({estado}) => {
     //Confirmacion al marcar pedido para Eliminarlo
     const acceptDialogEliminar = () => {
         startDeletingVenta(pedido);
+        <ProgressSpinner style={{width: '50px', height: '50px'}} strokeWidth="8" fill="var(--surface-ground)" aria-label="Loading" title="Load" />
     }
 
     const rejectDialogEliminar = () => {
@@ -310,10 +319,9 @@ export const DataViewPedidos = ({estado}) => {
                 acceptClassName="p-button-danger"
                 draggable={false}
                 defaultFocus='reject'
-
-            />
-            
-
+            >
+    
+            </ConfirmDialog>
             <DialogPago visible={visiblePago} setVisible={setVisiblePago} />
             <DialogEditPedido visible={visibleEditPedido} setVisible={setVisibleEditPedido} />
 

@@ -17,7 +17,7 @@ const detalleVenta = {
     }
   };
 
-export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit }) => {
+export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit, toastRef }) => {
     const { addDetalleVenta, closeVentaModal, closeDetalleVentaModal, isVentaModalOpen } = useVentaStore();
 
     
@@ -54,8 +54,7 @@ export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit }) => {
           return errors;
       },
         onSubmit: (data) => {
-        console.log(data);
-        addDetalleVenta(data);
+        addDetalleVenta(data, toastRef);
         onCloseDialog();
         formik.resetForm();
   }

@@ -2,6 +2,7 @@ import './Navbar.module.css'
 import { Badge } from "primereact/badge";
 import { Menubar } from "primereact/menubar";
 import { Link } from "react-router-dom";
+import Logo  from "../../../../public/logo.png"
 
 export const Navbar = () => {
 
@@ -66,12 +67,12 @@ const items = [
     }
 ];
 
-const start = <img alt="logo" src="public/logo2.png" height="50" className="mr-2"></img>;
+const end = <img alt="logo" src={Logo} height="50" className="mr-2 mt-1"></img>;
 
 return (
         <Menubar 
             model={items} 
-            start={start} 
+            end={end}
             style={{ backgroundColor: '#E9B712' }}
         />
 )

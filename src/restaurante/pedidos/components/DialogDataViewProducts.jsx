@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useCategoryStore, useProductStore, useVentaStore } from "../../../hooks";
 import { DataView } from "primereact/dataview";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { DialogDetalleVenta } from "../../venta/components/DialogDetalleVenta";
 import { RadioButton } from "primereact/radiobutton";
+import { Toast } from "primereact/toast";
 
 
 const FiltroPorDefecto = {'id':0, 'nombre': 'Todo'};
 
 export const DialogDataViewProducts = ({ visible, setVisible }) => {
 
-
+  const toastRef = useRef(null);
     const { products, setActiveProduct } = useProductStore();
     const { categories } = useCategoryStore();
     const { openVentaModal } = useVentaStore();
@@ -70,7 +71,18 @@ export const DialogDataViewProducts = ({ visible, setVisible }) => {
                         </div>
                     </div>
                     <div className="flex flex-column align-items-center gap-3 py-5">
-                        <img className="w-9 shadow-2 border-round" src={`${import.meta.env.VITE_API_URL}recursos/${product.foto}`} alt={product.descripcion} width="200" />
+                        {/* <img className="w-9 shadow-2 border-round" src={`${import.meta.env.VITE_API_URL}recursos/${product.foto}`} alt={product.descripcion} width="200" /> */}
+                        <img
+                        className="w-9 shadow-2 border-round"
+                        src={`${import.meta.env.VITE_API_URL}recursos/${product.foto}`}
+                        alt={product.descripcion}
+                        style={{
+                            width: '100%', // ancho del contenedor
+                            height: 'auto', // alto automático para mantener proporción
+                            objectFit: 'contain', // ajusta la imagen al contenedor sin recortar
+                            maxHeight: '150px', // alto máximo para evitar que la imagen sea demasiado alta
+                        }}
+                        />
                         <div className="text-lg font-bold">{product.nombre}</div>
                     </div>
                     <div className="flex align-items-center justify-content-between">
@@ -97,12 +109,13 @@ export const DialogDataViewProducts = ({ visible, setVisible }) => {
   return (
     <Dialog header='Lista productos' visible={visible} draggable={false} onHide={handleHide}
       modal className="p-fluid" style={{ width: '80rem', height: '80rem' }} blockScroll='true'>
+    <Toast ref={toastRef} position="bottom-right" />
     <div className="grid flex justify-content-center flex-wrap">
     <div className="col-12">
     <DataView value={filterProducts(products)} listTemplate={listTemplate} layout={layout} header={header()}/>
     </div>
     </div>
-    <DialogDetalleVenta productoDetalle={productDetalle} />
+    <DialogDetalleVenta productoDetalle={productDetalle} toastRef={toastRef}/>
     </Dialog>
     
   )
