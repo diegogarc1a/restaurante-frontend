@@ -138,10 +138,10 @@ export const DataViewPedidos = ({estado}) => {
       };
 
     const gridItem = (pedido, index) => {
-        
         return (
             <div className="sm:col-12 col-12 p-1" key={pedido.id}>
                 <div className={classNames("p-4 border-1 border-round shadow-6", { 'bg-teal-100 text-teal-900' : index === 0 && pedido.estado === 'Proceso'})}>
+                <div><span>#{pedido.id}</span></div>
                     <div className="flex flex-wrap align-items-center justify-content-between gap-2 ">
                         <div className="flex align-items-center gap-2">
                             <i className="pi pi-user"></i>
@@ -159,7 +159,6 @@ export const DataViewPedidos = ({estado}) => {
                             }
 
                             </div>
-
                     </div>
                     <div className="flex flex-column align-items-center gap-3 py-5">
                         <DataTable value={pedido.listaDetalleVenta}

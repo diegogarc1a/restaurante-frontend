@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import { useFormik } from "formik";
 import { Dialog } from "primereact/dialog"
-import { InputNumber } from "primereact/inputnumber"
 import { classNames } from "primereact/utils";
 import { useState } from "react";
 import { useVentaStore } from '../../../hooks';
 import { Button } from 'primereact/button';
+import CurrencyInput from 'react-currency-input-field';
+
 
 export const DialogPago = ({ visible, setVisible }) => {
   const { activeVenta, pagarPedido } = useVentaStore();
@@ -70,14 +71,28 @@ export const DialogPago = ({ visible, setVisible }) => {
           <label htmlFor="recibido" className={classNames('flex justify-content-left mb-2 font-bold', { 'p-error': isFormFieldValid('recibido') })}>
             Recibido
           </label>
-          <InputNumber value={recibido} size={5} autoFocus
-            className="text-base text-color border-round appearance-none outline-none focus:border-primary w-full" 
-            id="recibido" name="recibido" inputId="currency-us" mode="currency" currency="USD" locale="en-US" 
-            onChange={(e) => {
-              setRecibido(e.value);
-              formik.setFieldValue('recibido', e.value);
-            }}
-          />
+              <CurrencyInput
+                className="text-base text-color border-round appearance-none outline-none focus:border-primary w-full"
+                value={recibido}
+                id="recibido"
+                name="recibido"
+                placeholder="Ingrese cantidad recibida"
+                decimalsLimit={2}
+                prefix='$'
+                decimalSeparator='.'
+                allowNegativeValue={false}
+                onValueChange={(value) => {
+                  const newValue = value === undefined ? null : value;
+                  setRecibido(newValue);
+                  formik.setFieldValue('recibido', newValue);
+                }}
+                style={{
+                  MozAppearance: 'textfield',
+                  WebkitAppearance: 'textfield',
+                  appearance: 'textfield',
+                  padding: '0.5em',
+                }}
+              />
           {getFormErrorMessage('recibido')}
         </div>
         <div className="field col">
@@ -89,7 +104,7 @@ export const DialogPago = ({ visible, setVisible }) => {
             style={{
               padding: '0.5rem',
               backgroundColor: onCalcularCambio() < 0? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 128, 0, 0.2)',
-              color: onCalcularCambio() < 0? 'ed' : 'green'
+              color: onCalcularCambio() < 0? 'red' : 'green'
             }}
           >
             ${onCalcularCambio()}

@@ -6,6 +6,7 @@ import { Dialog } from "primereact/dialog";
 import { DialogDetalleVenta } from "../../venta/components/DialogDetalleVenta";
 import { RadioButton } from "primereact/radiobutton";
 import { Toast } from "primereact/toast";
+import { Dropdown } from "primereact/dropdown";
 
 
 const FiltroPorDefecto = {'id':0, 'nombre': 'Todo'};
@@ -38,31 +39,23 @@ export const DialogDataViewProducts = ({ visible, setVisible }) => {
 
       const header = () => {
         return (
-          <div className="flex flex justify-content-center">
-            <div className="flex flex-wrap gap-3">
-            <div className="flex align-items-center">
-                    <RadioButton inputId="0" name="Todo" value={FiltroPorDefecto} onChange={(e) => setSelectedCategory(e.value)} checked={selectedCategory.id === 0} />
-                    <label htmlFor="0" className="ml-2">Todo</label>
-                </div>
-               {
-                categories.map((c) => {
-                    return (
-                        <div key={c.id} >
-                        <RadioButton inputId={c.id} name="category" value={c} onChange={(e) => setSelectedCategory(e.value)} checked={selectedCategory.id === c.id} />
-                        <label htmlFor={c.id} className="ml-2">{c.nombre}</label>
-                    </div>
-                    )
-                })
-               }
-            </div>
-        </div>
+          <div className="flex flex justify-content-start mt-3">
+          <span className="mr-2 mt-3">Categorías:</span>
+          <Dropdown
+              value={selectedCategory}
+              options={[FiltroPorDefecto, ...categories]}
+              onChange={(e) => setSelectedCategory(e.value)}
+              optionLabel="nombre"
+              placeholder="Seleccione una categoría"
+              />
+          </div>
         )
       }
     
 
     const gridItem = (product) => {
         return (
-            <div className="sm:col-4 col-12 p-1" key={product.id}>
+            <div className="col-6 sm:col-4 lg:col-4 xl:col-4 p-1" key={product.id}>
                 <div className="p-4 border-1 surface-border surface-card border-round">
                     <div className="flex flex-wrap align-items-center justify-content-between gap-2">
                         <div className="flex align-items-center gap-2">

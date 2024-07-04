@@ -97,6 +97,7 @@ export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit, toastRef
                           Cantidad*
                       </label>
                         <InputNumber id="cantidad" name="cantidad" value={formik.values.cantidad} min={1} max={100}
+                            maxFractionDigits={0}
                             onValueChange={formik.handleChange} showButtons buttonLayout="horizontal"
                             className={classNames({ 'p-invalid': isFormFieldValid('cantidad') })}
                             decrementButtonClassName="p-button-danger" incrementButtonClassName="p-button-success" 
@@ -108,7 +109,7 @@ export const DialogDetalleVenta = ({ productoDetalle, detalleVentaEdit, toastRef
                       <label htmlFor="descripcion" className={classNames('font-bold', { 'p-error': isFormFieldValid('descripcion') })}>
                           Descripción*
                       </label>
-                      <InputText id="descripcion" name="descripcion" autoFocus value={formik.values.descripcion} onChange={formik.handleChange} className={classNames({ 'p-invalid': isFormFieldValid('descripcion') })} autoComplete='off'/>
+                      <InputText id="descripcion" name="descripcion" value={formik.values.descripcion} onChange={formik.handleChange} className={classNames({ 'p-invalid': isFormFieldValid('descripcion') })} autoComplete='off'/>
                       {getFormErrorMessage('descripcion')}
                   </div>
               </Dialog>
